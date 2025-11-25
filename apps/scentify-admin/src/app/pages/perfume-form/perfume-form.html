@@ -1,0 +1,194 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center gap-4">
+        <a routerLink="/perfumes" class="text-gray-600 hover:text-gray-900">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </a>
+        <h1 class="text-2xl font-bold text-gray-900">{{ perfumeId ? 'Edit Perfume' : 'Create New Perfume' }}</h1>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <form (ngSubmit)="onSubmit()" class="space-y-6">
+      <!-- Basic Information -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
+            <input type="text" [(ngModel)]="perfume.name" name="name" required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Brand *</label>
+            <input type="text" [(ngModel)]="perfume.brand" name="brand" required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Perfume Type *</label>
+            <select [(ngModel)]="perfume.type" name="type" required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+              <option value="">Select type</option>
+              <option value="parfum">Parfum (20-30%)</option>
+              <option value="eau_de_parfum">Eau de Parfum (15-20%)</option>
+              <option value="eau_de_toilette">Eau de Toilette (5-15%)</option>
+              <option value="eau_de_cologne">Eau de Cologne (2-5%)</option>
+              <option value="eau_fraiche">Eau Fraîche (1-3%)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Scent Family *</label>
+            <select [(ngModel)]="perfume.scentFamily" name="scentFamily" required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+              <option value="">Select scent family</option>
+              <option value="floral">Floral</option>
+              <option value="woody">Woody</option>
+              <option value="oriental">Oriental</option>
+              <option value="fresh">Fresh</option>
+              <option value="gourmand">Gourmand</option>
+              <option value="chypre">Chypre</option>
+              <option value="fougere">Fougère</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+            <select [(ngModel)]="perfume.gender" name="gender"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+              <option value="unisex">Unisex</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Release Date</label>
+            <input type="date" [(ngModel)]="perfume.releaseDate" name="releaseDate"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+          </div>
+        </div>
+        <div class="mt-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <textarea [(ngModel)]="perfume.description" name="description" rows="4"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+        </div>
+      </div>
+
+      <!-- Fragrance Notes -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Fragrance Notes</h2>
+
+        <!-- Top Notes -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Top Notes</label>
+          <div class="flex gap-2 mb-2">
+            <input type="text" [(ngModel)]="newTopNote" name="newTopNote" placeholder="e.g., Bergamot, Lemon"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <button type="button" (click)="addNote('top')"
+              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+              Add
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            @for (note of perfume.fragranceNotes?.top; track note) {
+            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+              {{ note }}
+              <button type="button" (click)="removeNote('top', note)" class="hover:text-purple-900">×</button>
+            </span>
+            }
+          </div>
+        </div>
+
+        <!-- Middle Notes -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Middle Notes (Heart)</label>
+          <div class="flex gap-2 mb-2">
+            <input type="text" [(ngModel)]="newMiddleNote" name="newMiddleNote" placeholder="e.g., Rose, Jasmine"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <button type="button" (click)="addNote('middle')"
+              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+              Add
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            @for (note of perfume.fragranceNotes?.middle; track note) {
+            <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+              {{ note }}
+              <button type="button" (click)="removeNote('middle', note)" class="hover:text-pink-900">×</button>
+            </span>
+            }
+          </div>
+        </div>
+
+        <!-- Base Notes -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Base Notes</label>
+          <div class="flex gap-2 mb-2">
+            <input type="text" [(ngModel)]="newBaseNote" name="newBaseNote" placeholder="e.g., Sandalwood, Vanilla"
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            <button type="button" (click)="addNote('base')"
+              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+              Add
+            </button>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            @for (note of perfume.fragranceNotes?.base; track note) {
+            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+              {{ note }}
+              <button type="button" (click)="removeNote('base', note)" class="hover:text-amber-900">×</button>
+            </span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing & Inventory -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Pricing & Inventory</h2>
+        <div class="space-y-4">
+          @for (size of perfume.sizes; track $index; let i = $index) {
+          <div class="flex gap-4 items-end">
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Size (ml)</label>
+              <input type="number" [(ngModel)]="size.volume" [name]="'volume-' + i"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+              <input type="number" [(ngModel)]="size.price" [name]="'price-' + i"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            </div>
+            <div class="flex-1">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+              <input type="number" [(ngModel)]="size.stock" [name]="'stock-' + i"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+            </div>
+            <button type="button" (click)="removeSize(i)"
+              class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg">
+              Remove
+            </button>
+          </div>
+          }
+          <button type="button" (click)="addSize()" class="text-purple-600 hover:text-purple-700 font-medium">
+            + Add Size Variant
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex justify-end gap-4">
+        <a routerLink="/perfumes"
+          class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+          Cancel
+        </a>
+        <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium">
+          Save
+        </button>
+      </div>
+    </form>
+  </main>
+</div>

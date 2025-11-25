@@ -1,109 +1,126 @@
-# Scentify
+# Scentify - Perfume E-Commerce Platform
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A modern, scalable NX monorepo for a perfume e-commerce application with React customer frontend, Angular admin panel, and Node.js/NestJS backends.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## 🚀 Quick Start
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+```bash
+# Install dependencies
+npm install --legacy-peer-deps
 
-## Generate a library
+# Start React web app (port 3000)
+npx nx serve scentify-web
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
+# Start Angular admin (port 4200)
+npx nx serve scentify-admin
+
+# Start Node.js API
+npx nx serve scentify-web-api
+
+# Start NestJS admin API
+npx nx serve scentify-admin-api
 ```
 
-## Run tasks
-
-To build the library use:
-
-```sh
-npx nx build pkg1
-```
-
-To run any task with Nx use:
-
-```sh
-npx nx <target> <project-name>
-```
-
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
+## 📁 Project Structure
 
 ```
-npx nx release
+scentify/
+├── apps/
+│   ├── scentify-web/              # React customer-facing app
+│   ├── scentify-web-api/          # Node.js/Express API
+│   ├── scentify-admin/            # Angular admin panel
+│   └── scentify-admin-api/        # NestJS admin API
+└── libs/
+    └── shared/
+        ├── types/                 # TypeScript interfaces & types
+        ├── utils/                 # Shared utility functions
+        └── data-access/           # API contracts & DTOs
 ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+## 🛠️ Tech Stack
 
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- **Frontend**: React 18 + Vite, Angular 20 + esbuild
+- **Backend**: Node.js + Express, NestJS
+- **Monorepo**: NX 22
+- **Language**: TypeScript (strict mode)
+- **Testing**: Vitest (React), Jest (Angular, Node, NestJS)
+- **Linting**: ESLint
+- **Formatting**: Prettier
 
-## Keep TypeScript project references up to date
+## 📚 Shared Libraries
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
+### @scentify/shared-types
+Common TypeScript interfaces for products, users, orders, reviews, cart, and wishlist.
 
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+### @scentify/shared-utils
+Shared utility functions and helpers.
 
-```sh
-npx nx sync
+### @scentify/shared-data-access
+API contracts and DTOs for frontend-backend communication.
+
+## 🎯 Development Guidelines
+
+See [`.agent/workflows/scentify-architecture-rules.md`](./.agent/workflows/scentify-architecture-rules.md) for:
+- Architecture best practices
+- Library categorization
+- Dependency rules
+- UI development guidelines
+- Perfume-specific features
+
+## 🔧 Common Commands
+
+```bash
+# Build all projects
+npx nx run-many -t build
+
+# Test all projects
+npx nx run-many -t test
+
+# Lint all projects
+npx nx run-many -t lint
+
+# Format code
+npx nx format:write
+
+# Visualize project graph
+npx nx graph
+
+# Build only affected projects
+npx nx affected -t build
+
+# Test only affected projects
+npx nx affected -t test
 ```
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+## 🎨 UI Development Focus
 
-```sh
-npx nx sync:check
-```
+As a UI developer, focus on:
+- Building premium, modern interfaces for `scentify-web` (React)
+- Creating admin dashboards for `scentify-admin` (Angular)
+- Using `@scentify/shared-types` for type safety
+- Implementing perfume-specific features (scent filters, fragrance notes, quiz finder)
+- Creating stunning designs with micro-animations and dark mode
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+## 📖 Documentation
 
-## Set up CI!
+- **Walkthrough**: See artifact `walkthrough.md` for complete setup details
+- **Architecture Rules**: `.agent/workflows/scentify-architecture-rules.md`
+- **Task Breakdown**: See artifact `task.md`
 
-### Step 1
+## 🌸 Perfume Domain Features
 
-To connect to Nx Cloud, run the following command:
+- **Scent Families**: Floral, Woody, Oriental, Fresh, Gourmand, Chypre, Fougère
+- **Fragrance Notes**: Top, Middle, Base (pyramid structure)
+- **Perfume Types**: Parfum, EDP, EDT, EDC, Eau Fraîche
+- **User Features**: Wishlist ("Perfume Wardrobe"), Reviews, Cart
+- **Admin Features**: Product management, Order tracking, User management
 
-```sh
-npx nx connect
-```
+## 📝 Notes
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+- Use `--legacy-peer-deps` for npm install due to Angular/Vitest version conflicts
+- TypeScript project references enabled for fast incremental builds
+- NX caching configured for optimal CI/CD performance
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+**Ready to build amazing perfume shopping experiences!** 🌸✨
