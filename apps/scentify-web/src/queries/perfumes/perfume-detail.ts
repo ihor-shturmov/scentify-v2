@@ -10,7 +10,8 @@ const usePerfumeDetail = (id: string) => {
         queryKey: ['perfume-detail', id],
         queryFn: async () => {
             const response = await fetch(`/api/perfumes/${id}`);
-            return response.json();
+            const json = await response.json();
+            return json.data;
         },
     });
 

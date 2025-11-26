@@ -67,6 +67,21 @@ const PerfumeSchema: Schema = new Schema(
     }
 );
 
+// 🔹 Virtual `id` that mirrors `_id`
+PerfumeSchema.virtual('id').get(function (this: IPerfume) {
+    return this._id.toHexString();
+});
+
+// 🔹 Control JSON output (what Nest sends to FE)
+PerfumeSchema.set('toJSON', {
+    virtuals: true,      // include `id`
+    versionKey: false,   // hide `__v`
+    transform: (_: any, ret: any) => {
+        delete ret._id;  // hide original _id
+        return ret;
+    },
+});
+
 // Indexes for better query performance
 PerfumeSchema.index({ name: 'text', brand: 'text', description: 'text' });
 PerfumeSchema.index({ scentFamily: 1 });
