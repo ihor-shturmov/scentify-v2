@@ -1,9 +1,9 @@
 import { useParams, Link } from 'react-router-dom';
-import { mockPerfumes } from '../data/mock-perfumes';
+import usePerfumeDetail from '../queries/perfumes/perfume-detail';
 
 export function PerfumeDetail() {
     const { id } = useParams<{ id: string }>();
-    const perfume = mockPerfumes.find(p => p.id === id);
+    const { data: perfume } = usePerfumeDetail(id || '');
 
     if (!perfume) {
         return (

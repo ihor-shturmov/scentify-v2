@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupSchema, SignUpSchemaType } from '../types/signup';
-import useSignup from '../queries/signup';
+import useSignup from '../queries/auth/signup';
 
 export function Signup() {
     const { register, handleSubmit, formState: { errors } } = useForm<SignUpSchemaType>({

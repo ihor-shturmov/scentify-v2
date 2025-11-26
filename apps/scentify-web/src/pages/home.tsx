@@ -1,7 +1,9 @@
-import { mockPerfumes } from '../data/mock-perfumes';
 import { PerfumeCard } from '../components/perfume-card';
+import usePerfumes from '../queries/perfumes/perfumes';
 
 export function Home() {
+    const { data: perfumes } = usePerfumes();
+
     return (
         <div className="min-h-screen bg-white">
             {/* Minimal Hero Section */}
@@ -25,7 +27,7 @@ export function Home() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between">
                         <p className="text-sm uppercase tracking-wider text-gray-500 font-light">
-                            {mockPerfumes.length} Products
+                            {perfumes?.length} Products
                         </p>
                         <select className="text-sm uppercase tracking-wider text-gray-600 font-light border-none focus:ring-0 cursor-pointer bg-transparent">
                             <option value="">All Scents</option>
@@ -42,7 +44,7 @@ export function Home() {
             {/* Product Grid */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12 md:gap-x-8 md:gap-y-16">
-                    {mockPerfumes.map((perfume) => (
+                    {perfumes && perfumes?.map((perfume) => (
                         <PerfumeCard key={perfume.id} perfume={perfume} />
                     ))}
                 </div>

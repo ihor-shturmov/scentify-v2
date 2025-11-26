@@ -1,15 +1,15 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { SignUpSchemaType } from "../types/signup";
-import { useAuthStore } from "../store/auth.store";
+import { LoginSchemaType } from "../../types/login";
+import { useAuthStore } from "../../store/auth.store";
 
-function useSignup() {
+function useLogin() {
     const navigate = useNavigate();
     const setUser = useAuthStore((state) => state.setUser);
 
     const { mutateAsync, ...rest } = useMutation({
-        mutationFn: async (data: SignUpSchemaType) => {
-            const response = await fetch('/api/auth/signup', {
+        mutationFn: async (data: LoginSchemaType) => {
+            const response = await fetch('/api/auth/signin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -19,7 +19,7 @@ function useSignup() {
 
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.message || 'Signup failed');
+                throw new Error(error.message || 'Login failed');
             }
 
             return response.json();
@@ -35,4 +35,4 @@ function useSignup() {
     return { mutateAsync, ...rest };
 }
 
-export default useSignup;
+export default useLogin;

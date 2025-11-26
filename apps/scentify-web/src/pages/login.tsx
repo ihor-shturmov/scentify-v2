@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, LoginSchemaType } from '../types/login';
-import useLogin from '../queries/login';
+import useLogin from '../queries/auth/login';
 
 export function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm<LoginSchemaType>({
