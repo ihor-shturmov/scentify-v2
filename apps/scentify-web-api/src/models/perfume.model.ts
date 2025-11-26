@@ -19,7 +19,7 @@ export interface IPerfume extends Document {
     }>;
     rating: number;
     reviewCount: number;
-    imageUrl?: string;
+    images: string[];
     inStock: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -59,7 +59,7 @@ const PerfumeSchema: Schema = new Schema(
         ],
         rating: { type: Number, default: 0, min: 0, max: 5 },
         reviewCount: { type: Number, default: 0 },
-        imageUrl: { type: String },
+        images: { type: [String], default: [] },
         inStock: { type: Boolean, default: true }
     },
     {

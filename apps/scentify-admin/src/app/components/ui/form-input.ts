@@ -23,6 +23,8 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
         [type]="type"
         [placeholder]="placeholder"
         [value]="value"
+        [min]="min"
+        [max]="max"
         (input)="onInput($event)"
         (blur)="onTouched()"
         [disabled]="disabled"
@@ -40,6 +42,8 @@ export class FormInputComponent implements ControlValueAccessor {
     @Input() placeholder = '';
     @Input() required = false;
     @Input() errorMessage = 'This field is required';
+    @Input() min?: number;
+    @Input() max?: number;
 
     value = '';
     disabled = false;

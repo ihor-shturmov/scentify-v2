@@ -2,10 +2,11 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PerfumesStore } from '../../store/perfumes.store';
+import { FormatPerfumeTypePipe } from '../../pipes/format-perfume-type.pipe';
 
 @Component({
   selector: 'app-perfume-list',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormatPerfumeTypePipe],
   templateUrl: './perfume-list.html',
 })
 export class PerfumeListComponent {

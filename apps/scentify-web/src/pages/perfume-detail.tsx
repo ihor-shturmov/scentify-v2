@@ -1,9 +1,11 @@
 import { useParams, Link } from 'react-router-dom';
+import { useState } from 'react';
 import usePerfumeDetail from '../queries/perfumes/perfume-detail';
 
 export function PerfumeDetail() {
     const { id } = useParams<{ id: string }>();
     const { data: perfume } = usePerfumeDetail(id || '');
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
     if (!perfume) {
         return (
@@ -17,6 +19,9 @@ export function PerfumeDetail() {
             </div>
         );
     }
+
+    const hasImages = perfume.images && perfume.images.length > 0;
+    const currentImage = hasImages ? perfume.images[selectedImageIndex] : null;
 
     return (
         <div className="min-h-screen bg-white">
@@ -36,11 +41,46 @@ export function PerfumeDetail() {
             {/* Product Details */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-                    {/* Image */}
-                    <div className="aspect-[3/4] bg-gray-50 flex items-center justify-center">
-                        <svg className="w-64 h-64 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
+                    {/* Image Gallery */}
+                    <div className="space-y-4">
+                        {/* Main Image */}
+                        <div className="aspect-[3/4] bg-gray-50 overflow-hidden">
+                            {currentImage ? (
+                                <img
+                                    src={currentImage}
+                                    alt={perfume.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                    <svg className="w-64 h-64 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Thumbnail Navigation */}
+                        {hasImages && perfume.images.length > 1 && (
+                            <div className="grid grid-cols-4 gap-3">
+                                {perfume.images.map((image, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => setSelectedImageIndex(index)}
+                                        className={`aspect-square bg-gray-50 overflow-hidden border-2 transition-colors ${selectedImageIndex === index
+                                                ? 'border-gray-900'
+                                                : 'border-transparent hover:border-gray-300'
+                                            }`}
+                                    >
+                                        <img
+                                            src={image}
+                                            alt={`${perfume.name} view ${index + 1}`}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Info */}

@@ -5,7 +5,6 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { inject } from '@angular/core';
 import { PerfumesStore } from '../../store/perfumes.store';
 import { Perfume } from '@scentify/shared-types';
-import { formatDateForInput } from '@scentify/shared-utils';
 import { FormInputComponent } from '../../components/ui/form-input';
 import { FormSelectComponent } from '../../components/ui/form-select';
 import { FormTextareaComponent } from '../../components/ui/form-textarea';
@@ -109,7 +108,7 @@ export class PerfumeFormComponent {
       scentFamily: scentFamilyValue,
       gender: genderValue,
       description: perfume.description || '',
-      releaseDate: formatDateForInput(perfume.releaseDate)
+      releaseDate: perfume.releaseDate ? new Date(perfume.releaseDate).getFullYear() : null
     };
 
     this.perfumeForm.patchValue(formValue);
@@ -162,7 +161,13 @@ export class PerfumeFormComponent {
       formArray = this.baseNotes;
     }
 
-    formArray.push(this.fb.control(note));
+    // Check if note contains commas - if so, split and add each separately
+    if (note.includes(',')) {
+      const notes = note.split(',').map(n => n.trim()).filter(n => n.length > 0);
+      notes.forEach(n => formArray.push(this.fb.control(n)));
+    } else {
+      formArray.push(this.fb.control(note.trim()));
+    }
   }
 
   removeNote(type: 'top' | 'middle' | 'base', index: number): void {
@@ -177,7 +182,7 @@ export class PerfumeFormComponent {
 
   onExistingImageRemoved(imageUrl: string): void {
     if (!this.perfumeId) return;
-    
+
     this.perfumesStore.deleteImage({ perfumeId: this.perfumeId, imageUrl });
   }
 
