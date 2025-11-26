@@ -1,20 +1,41 @@
-import { Component, effect, OnInit } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { inject } from '@angular/core';
 import { PerfumesStore } from '../../store/perfumes.store';
 import { Perfume } from '@scentify/shared-types';
+import { formatDateForInput } from '@scentify/shared-utils';
+import { FormInputComponent } from '../../components/ui/form-input';
+import { FormSelectComponent } from '../../components/ui/form-select';
+import { FormTextareaComponent } from '../../components/ui/form-textarea';
+import { FormTagInputComponent } from '../../components/ui/form-tag-input';
+import { PricingInventoryComponent } from '../../components/perfumes/pricing-inventory/pricing-inventory';
+import {
+  PERFUME_TYPE_OPTIONS,
+  SCENT_FAMILY_OPTIONS,
+  GENDER_OPTIONS
+} from '../../constants/perfume-options';
 
 @Component({
   selector: 'app-perfume-form',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    FormInputComponent,
+    FormSelectComponent,
+    FormTextareaComponent,
+    FormTagInputComponent,
+    PricingInventoryComponent
+  ],
   templateUrl: './perfume-form.html',
 })
-export class PerfumeFormComponent implements OnInit {
+export class PerfumeFormComponent {
   private perfumesStore = inject(PerfumesStore);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
   perfumeForm!: FormGroup;
   perfumeId: string | null = null;
@@ -23,20 +44,31 @@ export class PerfumeFormComponent implements OnInit {
   newMiddleNote = '';
   newBaseNote = '';
 
+  // Select options using enum-based constants
+  perfumeTypeOptions = PERFUME_TYPE_OPTIONS;
+  scentFamilyOptions = SCENT_FAMILY_OPTIONS;
+  genderOptions = GENDER_OPTIONS;
+
   constructor() {
     this.initializeForm();
 
+    // Watch for route parameter changes
     effect(() => {
-      if (this.perfumesStore.selectedPerfume()) {
-        const perfume = this.perfumesStore.selectedPerfume()!;
-        this.perfumeId = perfume.id;
+      const id = this.activatedRoute.snapshot.params['id'];
+      if (id) {
+        this.perfumeId = id;
+        console.log('Loading perfume with ID:', id);
+      }
+    });
+
+    // Watch for selectedPerfume changes
+    effect(() => {
+      const perfume = this.perfumesStore.selectedPerfume();
+      if (perfume) {
+        console.log('Perfume loaded from store:', perfume);
         this.patchFormWithPerfume(perfume);
       }
     });
-  }
-
-  ngOnInit(): void {
-    // Form is already initialized in constructor
   }
 
   private initializeForm(): void {
@@ -53,7 +85,7 @@ export class PerfumeFormComponent implements OnInit {
         middle: this.fb.array([]),
         base: this.fb.array([])
       }),
-      sizes: this.fb.array([])
+      sizes: [[]]  // Changed from FormArray to FormControl with empty array as initial value
     });
   }
 
@@ -62,18 +94,31 @@ export class PerfumeFormComponent implements OnInit {
     this.topNotes.clear();
     this.middleNotes.clear();
     this.baseNotes.clear();
-    this.sizes.clear();
+
+    // Extract and ensure values are strings for select fields
+    const typeValue = String(perfume.type || '').trim();
+    const scentFamilyValue = String(perfume.scentFamily || '').trim();
+    const genderValue = String(perfume.gender || 'unisex').trim();
 
     // Patch basic fields
-    this.perfumeForm.patchValue({
-      name: perfume.name,
-      brand: perfume.brand,
+    const formValue = {
+      name: perfume.name || '',
+      brand: perfume.brand || '',
+      type: typeValue,
+      scentFamily: scentFamilyValue,
+      gender: genderValue,
+      description: perfume.description || '',
+      releaseDate: formatDateForInput(perfume.releaseDate)
+    };
+
+    console.log('Perfume data from API:', {
       type: perfume.type,
       scentFamily: perfume.scentFamily,
-      gender: perfume.gender || 'unisex',
-      description: perfume.description || '',
-      releaseDate: perfume.releaseDate || ''
+      gender: perfume.gender
     });
+    console.log('Patching form with values:', formValue);
+    
+    this.perfumeForm.patchValue(formValue);
 
     // Add fragrance notes
     perfume.fragranceNotes?.top?.forEach(note => {
@@ -86,13 +131,15 @@ export class PerfumeFormComponent implements OnInit {
       this.baseNotes.push(this.fb.control(note));
     });
 
-    // Add sizes
-    perfume.sizes?.forEach(size => {
-      this.sizes.push(this.fb.group({
-        volume: [size.volume],
-        price: [size.price],
-        stock: [size.stock || 0]
-      }));
+    // Patch sizes directly to the form control
+    if (perfume.sizes) {
+      this.perfumeForm.patchValue({ sizes: perfume.sizes });
+    }
+
+    console.log('Form values after patch:', {
+      type: this.perfumeForm.get('type')?.value,
+      scentFamily: this.perfumeForm.get('scentFamily')?.value,
+      gender: this.perfumeForm.get('gender')?.value
     });
   }
 
@@ -109,28 +156,17 @@ export class PerfumeFormComponent implements OnInit {
     return this.perfumeForm.get('fragranceNotes.base') as FormArray;
   }
 
-  get sizes(): FormArray {
-    return this.perfumeForm.get('sizes') as FormArray;
-  }
+  addNote(type: 'top' | 'middle' | 'base', note?: string): void {
+    if (!note) return;
 
-  addNote(type: 'top' | 'middle' | 'base'): void {
-    let note = '';
     let formArray: FormArray;
 
-    if (type === 'top' && this.newTopNote.trim()) {
-      note = this.newTopNote.trim();
+    if (type === 'top') {
       formArray = this.topNotes;
-      this.newTopNote = '';
-    } else if (type === 'middle' && this.newMiddleNote.trim()) {
-      note = this.newMiddleNote.trim();
+    } else if (type === 'middle') {
       formArray = this.middleNotes;
-      this.newMiddleNote = '';
-    } else if (type === 'base' && this.newBaseNote.trim()) {
-      note = this.newBaseNote.trim();
-      formArray = this.baseNotes;
-      this.newBaseNote = '';
     } else {
-      return;
+      formArray = this.baseNotes;
     }
 
     formArray.push(this.fb.control(note));
@@ -146,17 +182,7 @@ export class PerfumeFormComponent implements OnInit {
     }
   }
 
-  addSize(): void {
-    this.sizes.push(this.fb.group({
-      volume: [50],
-      price: [0],
-      stock: [0]
-    }));
-  }
 
-  removeSize(index: number): void {
-    this.sizes.removeAt(index);
-  }
 
   onSubmit(): void {
     if (this.perfumeForm.invalid) {

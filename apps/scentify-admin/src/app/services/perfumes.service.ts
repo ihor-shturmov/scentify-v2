@@ -1,6 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable, tap } from "rxjs";
+import { Observable } from "rxjs";
 import { Perfume } from "@scentify/shared-types";
 
 @Injectable({ providedIn: 'root' })
@@ -9,9 +9,7 @@ export class PerfumesService {
     private http: HttpClient = inject(HttpClient);
 
     getPerfumes(): Observable<Perfume[]> {
-        return this.http.get<Perfume[]>(this.apiUrl).pipe(
-            tap((perfumes) => console.log('perfumes', perfumes))
-        );
+        return this.http.get<Perfume[]>(this.apiUrl);
     }
 
     getPerfume(id: string): Observable<Perfume> {

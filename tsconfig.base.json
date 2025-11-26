@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "composite": true,
     "declaration": true,
     "declarationMap": true,
@@ -22,6 +23,11 @@
     "target": "es2022",
     "customConditions": [
       "@scentify/source"
-    ]
+    ],
+    "paths": {
+      "@scentify/shared-utils": ["libs/shared/utils/src/index.ts"],
+      "@scentify/shared-types": ["libs/shared/types/src/index.ts"],
+      "@scentify/shared-data-access": ["libs/shared/data-access/src/index.ts"]
+    }
   }
 }

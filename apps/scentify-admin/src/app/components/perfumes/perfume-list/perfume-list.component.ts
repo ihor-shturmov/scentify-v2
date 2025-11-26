@@ -1,13 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PerfumesStore } from '../../store/perfumes.store';
+import { PerfumesStore } from '../../../store/perfumes.store';
 import { Perfume } from '@scentify/shared-types';
 
 @Component({
-    selector: 'app-perfume-list',
-    standalone: true,
-    imports: [CommonModule],
-    template: `
+  selector: 'app-perfume-list',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
     <div class="perfume-list-container">
       <div class="header">
         <h1>Perfume Management</h1>
@@ -88,7 +88,7 @@ import { Perfume } from '@scentify/shared-types';
       }
     </div>
   `,
-    styles: [`
+  styles: [`
     .perfume-list-container {
       padding: 2rem;
       max-width: 1400px;
@@ -309,29 +309,29 @@ import { Perfume } from '@scentify/shared-types';
   `]
 })
 export class PerfumeListComponent implements OnInit {
-    store = inject(PerfumesStore);
+  store = inject(PerfumesStore);
 
-    ngOnInit() {
-        // Load perfumes when component initializes
-        this.store.loadPerfumes();
-    }
+  ngOnInit() {
+    // Load perfumes when component initializes
+    this.store.loadPerfumes();
+  }
 
-    onCreateNew() {
-        // Navigate to create form or open modal
-        console.log('Create new perfume');
-        // Example: this.router.navigate(['/perfumes/create']);
-    }
+  onCreateNew() {
+    // Navigate to create form or open modal
+    console.log('Create new perfume');
+    // Example: this.router.navigate(['/perfumes/create']);
+  }
 
-    onEdit(perfume: Perfume) {
-        // Select perfume and navigate to edit form
-        this.store.selectPerfume(perfume);
-        console.log('Edit perfume:', perfume.id);
-        // Example: this.router.navigate(['/perfumes/edit', perfume.id]);
-    }
+  onEdit(perfume: Perfume) {
+    // Select perfume and navigate to edit form
+    this.store.selectPerfume(perfume);
+    console.log('Edit perfume:', perfume.id);
+    // Example: this.router.navigate(['/perfumes/edit', perfume.id]);
+  }
 
-    onDelete(id: string) {
-        if (confirm('Are you sure you want to delete this perfume?')) {
-            this.store.deletePerfume(id);
-        }
+  onDelete(id: string) {
+    if (confirm('Are you sure you want to delete this perfume?')) {
+      this.store.deletePerfume(id);
     }
+  }
 }

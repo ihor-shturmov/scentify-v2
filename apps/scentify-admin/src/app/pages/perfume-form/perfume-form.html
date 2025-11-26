@@ -20,61 +20,20 @@
       <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
-            <input type="text" formControlName="name" required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Brand *</label>
-            <input type="text" formControlName="brand" required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Perfume Type *</label>
-            <select formControlName="type" required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-              <option value="">Select type</option>
-              <option value="parfum">Parfum (20-30%)</option>
-              <option value="eau_de_parfum">Eau de Parfum (15-20%)</option>
-              <option value="eau_de_toilette">Eau de Toilette (5-15%)</option>
-              <option value="eau_de_cologne">Eau de Cologne (2-5%)</option>
-              <option value="eau_fraiche">Eau Fraîche (1-3%)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Scent Family *</label>
-            <select formControlName="scentFamily" required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-              <option value="">Select scent family</option>
-              <option value="floral">Floral</option>
-              <option value="woody">Woody</option>
-              <option value="oriental">Oriental</option>
-              <option value="fresh">Fresh</option>
-              <option value="gourmand">Gourmand</option>
-              <option value="chypre">Chypre</option>
-              <option value="fougere">Fougère</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-            <select formControlName="gender"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-              <option value="unisex">Unisex</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Release Date</label>
-            <input type="date" formControlName="releaseDate"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-          </div>
+          <app-form-input formControlName="name" label="Product Name" [required]="true"
+            placeholder="Enter perfume name"></app-form-input>
+          <app-form-input formControlName="brand" label="Brand" [required]="true"
+            placeholder="Enter brand name"></app-form-input>
+          <app-form-select formControlName="type" label="Perfume Type" [options]="perfumeTypeOptions" [required]="true"
+            placeholder="Select type"></app-form-select>
+          <app-form-select formControlName="scentFamily" label="Scent Family" [options]="scentFamilyOptions"
+            [required]="true" placeholder="Select scent family"></app-form-select>
+          <app-form-select formControlName="gender" label="Gender" [options]="genderOptions"></app-form-select>
+          <app-form-input formControlName="releaseDate" type="date" label="Release Date"></app-form-input>
         </div>
         <div class="mt-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-          <textarea formControlName="description" rows="4"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"></textarea>
+          <app-form-textarea formControlName="description" label="Description" [rows]="4"
+            placeholder="Enter perfume description"></app-form-textarea>
         </div>
       </div>
 
@@ -84,100 +43,28 @@
 
         <!-- Top Notes -->
         <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Top Notes</label>
-          <div class="flex gap-2 mb-2">
-            <input type="text" [(ngModel)]="newTopNote" name="newTopNote" placeholder="e.g., Bergamot, Lemon"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-            <button type="button" (click)="addNote('top')"
-              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
-              Add
-            </button>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            @for (note of topNotes.controls; track $index; let i = $index) {
-            <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
-              {{ note.value }}
-              <button type="button" (click)="removeNote('top', i)" class="hover:text-purple-900">×</button>
-            </span>
-            }
-          </div>
+          <app-form-tag-input label="Top Notes" [tags]="topNotes.value" tagColor="purple"
+            placeholder="e.g., Bergamot, Lemon" (tagAdded)="addNote('top', $event)"
+            (tagRemoved)="removeNote('top', $event)"></app-form-tag-input>
         </div>
 
         <!-- Middle Notes -->
         <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Middle Notes (Heart)</label>
-          <div class="flex gap-2 mb-2">
-            <input type="text" [(ngModel)]="newMiddleNote" name="newMiddleNote" placeholder="e.g., Rose, Jasmine"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-            <button type="button" (click)="addNote('middle')"
-              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
-              Add
-            </button>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            @for (note of middleNotes.controls; track $index; let i = $index) {
-            <span class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
-              {{ note.value }}
-              <button type="button" (click)="removeNote('middle', i)" class="hover:text-pink-900">×</button>
-            </span>
-            }
-          </div>
+          <app-form-tag-input label="Middle Notes (Heart)" [tags]="middleNotes.value" tagColor="pink"
+            placeholder="e.g., Rose, Jasmine" (tagAdded)="addNote('middle', $event)"
+            (tagRemoved)="removeNote('middle', $event)"></app-form-tag-input>
         </div>
 
         <!-- Base Notes -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Base Notes</label>
-          <div class="flex gap-2 mb-2">
-            <input type="text" [(ngModel)]="newBaseNote" name="newBaseNote" placeholder="e.g., Sandalwood, Vanilla"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-            <button type="button" (click)="addNote('base')"
-              class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
-              Add
-            </button>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            @for (note of baseNotes.controls; track $index; let i = $index) {
-            <span class="bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
-              {{ note.value }}
-              <button type="button" (click)="removeNote('base', i)" class="hover:text-amber-900">×</button>
-            </span>
-            }
-          </div>
+          <app-form-tag-input label="Base Notes" [tags]="baseNotes.value" tagColor="amber"
+            placeholder="e.g., Sandalwood, Vanilla" (tagAdded)="addNote('base', $event)"
+            (tagRemoved)="removeNote('base', $event)"></app-form-tag-input>
         </div>
       </div>
 
       <!-- Pricing & Inventory -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Pricing & Inventory</h2>
-        <div class="space-y-4" formArrayName="sizes">
-          @for (size of sizes.controls; track $index; let i = $index) {
-          <div class="flex gap-4 items-end" [formGroupName]="i">
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Size (ml)</label>
-              <input type="number" formControlName="volume"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-            </div>
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
-              <input type="number" formControlName="price"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-            </div>
-            <div class="flex-1">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-              <input type="number" formControlName="stock"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-            </div>
-            <button type="button" (click)="removeSize(i)"
-              class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg">
-              Remove
-            </button>
-          </div>
-          }
-          <button type="button" (click)="addSize()" class="text-purple-600 hover:text-purple-700 font-medium">
-            + Add Size Variant
-          </button>
-        </div>
-      </div>
+      <app-pricing-inventory formControlName="sizes"></app-pricing-inventory>
 
       <!-- Form Actions -->
       <div class="flex justify-end gap-4">

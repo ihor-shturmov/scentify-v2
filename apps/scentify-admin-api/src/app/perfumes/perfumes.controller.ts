@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import { PerfumesService } from "./perfumes.service";
 import { CreatePerfumeDto } from "./dto/create-perfume.dto";
 
@@ -19,5 +19,10 @@ export class PerfumesController {
     @Post()
     createPerfume(@Body() createPerfumeDto: CreatePerfumeDto) {
         return this.perfumesService.create(createPerfumeDto);
+    }
+
+    @Patch()
+    updatePerfume(@Param('id') id: string, @Body() updatePerfumeDto: Partial<CreatePerfumeDto>) {
+        return this.perfumesService.update(id, updatePerfumeDto);
     }
 }
