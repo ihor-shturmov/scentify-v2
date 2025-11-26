@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, forwardRef, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
@@ -26,13 +26,14 @@ export interface SelectOption {
         <span *ngIf="required" class="text-red-500">*</span>
       </label>
       <select
+        #selectElement
         [value]="value"
         (change)="onChange($event)"
         (blur)="onTouched()"
         [disabled]="disabled"
         [class]="selectClasses"
       >
-        <option value="" *ngIf="placeholder">{{ placeholder }}</option>
+        <option value="" *ngIf="placeholder && placeholder.trim()">{{ placeholder }}</option>
         <option *ngFor="let option of options" [value]="option.value">
           {{ option.label }}
         </option>
@@ -43,12 +44,13 @@ export interface SelectOption {
     </div>
   `
 })
-export class FormSelectComponent implements ControlValueAccessor {
+export class FormSelectComponent implements ControlValueAccessor, AfterViewInit {
     @Input() label = '';
     @Input() options: SelectOption[] = [];
     @Input() placeholder = 'Select an option';
     @Input() required = false;
     @Input() errorMessage = 'This field is required';
+    @ViewChild('selectElement') selectElement?: ElementRef<HTMLSelectElement>;
 
     value: string = '';
     disabled = false;
@@ -58,6 +60,13 @@ export class FormSelectComponent implements ControlValueAccessor {
     onTouched: () => void = () => { };
 
     constructor(private cdr: ChangeDetectorRef) { }
+
+    ngAfterViewInit(): void {
+        // Ensure the select element has the correct value after rendering
+        if (this.selectElement && this.value) {
+            this.selectElement.nativeElement.value = this.value;
+        }
+    }
 
     get selectClasses(): string {
         const baseClasses = 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors';
@@ -82,6 +91,10 @@ export class FormSelectComponent implements ControlValueAccessor {
             this.value = String(value).trim();
         } else {
             this.value = '';
+        }
+        // Sync the DOM element if it exists
+        if (this.selectElement) {
+            this.selectElement.nativeElement.value = this.value;
         }
         this.cdr.markForCheck();
     }

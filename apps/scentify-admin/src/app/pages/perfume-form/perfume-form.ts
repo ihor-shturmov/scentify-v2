@@ -110,13 +110,6 @@ export class PerfumeFormComponent {
       description: perfume.description || '',
       releaseDate: formatDateForInput(perfume.releaseDate)
     };
-
-    console.log('Perfume data from API:', {
-      type: perfume.type,
-      scentFamily: perfume.scentFamily,
-      gender: perfume.gender
-    });
-    console.log('Patching form with values:', formValue);
     
     this.perfumeForm.patchValue(formValue);
 
@@ -135,12 +128,6 @@ export class PerfumeFormComponent {
     if (perfume.sizes) {
       this.perfumeForm.patchValue({ sizes: perfume.sizes });
     }
-
-    console.log('Form values after patch:', {
-      type: this.perfumeForm.get('type')?.value,
-      scentFamily: this.perfumeForm.get('scentFamily')?.value,
-      gender: this.perfumeForm.get('gender')?.value
-    });
   }
 
   // Getters for form arrays
