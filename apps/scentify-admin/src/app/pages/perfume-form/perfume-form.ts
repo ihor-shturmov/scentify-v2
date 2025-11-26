@@ -10,6 +10,7 @@ import { FormInputComponent } from '../../components/ui/form-input';
 import { FormSelectComponent } from '../../components/ui/form-select';
 import { FormTextareaComponent } from '../../components/ui/form-textarea';
 import { FormTagInputComponent } from '../../components/ui/form-tag-input';
+import { ImageUploadComponent } from '../../components/ui/image-upload';
 import { PricingInventoryComponent } from '../../components/perfumes/pricing-inventory/pricing-inventory';
 import {
   PERFUME_TYPE_OPTIONS,
@@ -27,6 +28,7 @@ import {
     FormSelectComponent,
     FormTextareaComponent,
     FormTagInputComponent,
+    ImageUploadComponent,
     PricingInventoryComponent
   ],
   templateUrl: './perfume-form.html',
@@ -57,7 +59,6 @@ export class PerfumeFormComponent {
       const id = this.activatedRoute.snapshot.params['id'];
       if (id) {
         this.perfumeId = id;
-        console.log('Loading perfume with ID:', id);
       }
     });
 
@@ -65,7 +66,6 @@ export class PerfumeFormComponent {
     effect(() => {
       const perfume = this.perfumesStore.selectedPerfume();
       if (perfume) {
-        console.log('Perfume loaded from store:', perfume);
         this.patchFormWithPerfume(perfume);
       }
     });
@@ -85,7 +85,8 @@ export class PerfumeFormComponent {
         middle: this.fb.array([]),
         base: this.fb.array([])
       }),
-      sizes: [[]]  // Changed from FormArray to FormControl with empty array as initial value
+      sizes: [[]],  // Changed from FormArray to FormControl with empty array as initial value
+      images: [[] as File[]]  // File array for upload
     });
   }
 
@@ -110,7 +111,7 @@ export class PerfumeFormComponent {
       description: perfume.description || '',
       releaseDate: formatDateForInput(perfume.releaseDate)
     };
-    
+
     this.perfumeForm.patchValue(formValue);
 
     // Add fragrance notes
@@ -127,6 +128,11 @@ export class PerfumeFormComponent {
     // Patch sizes directly to the form control
     if (perfume.sizes) {
       this.perfumeForm.patchValue({ sizes: perfume.sizes });
+    }
+
+    // Patch images (existing URLs)
+    if (perfume.images && perfume.images.length > 0) {
+      this.perfumeForm.patchValue({ images: perfume.images });
     }
   }
 
@@ -169,7 +175,11 @@ export class PerfumeFormComponent {
     }
   }
 
-
+  onExistingImageRemoved(imageUrl: string): void {
+    if (!this.perfumeId) return;
+    
+    this.perfumesStore.deleteImage({ perfumeId: this.perfumeId, imageUrl });
+  }
 
   onSubmit(): void {
     if (this.perfumeForm.invalid) {
@@ -178,15 +188,16 @@ export class PerfumeFormComponent {
     }
 
     const formValue = this.perfumeForm.value;
+    const images = formValue.images || [];
 
-    if (this.perfumeId) {
-      this.perfumesStore.updatePerfume({
-        id: this.perfumeId,
-        data: formValue
-      });
-    } else {
-      this.perfumesStore.createPerfume(formValue);
-    }
-    this.router.navigate(['/perfumes']);
+    this.perfumesStore.savePerfumeWithImages({
+      perfumeData: formValue,
+      perfumeId: this.perfumeId || undefined,
+      images,
+      onSuccess: () => {
+        // Navigate to perfumes list after successful save
+        this.router.navigate(['/perfumes']);
+      }
+    });
   }
 }

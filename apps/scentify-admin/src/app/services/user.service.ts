@@ -16,7 +16,7 @@ export interface User {
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-    private apiUrl = 'http://localhost:3002/api/users';
+    private apiUrl = '/api/users';
     private http: HttpClient = inject(HttpClient);
 
     getUsers(): Observable<User[]> {

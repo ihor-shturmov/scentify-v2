@@ -28,7 +28,8 @@
             placeholder="Select type"></app-form-select>
           <app-form-select formControlName="scentFamily" label="Scent Family" [options]="scentFamilyOptions"
             [required]="true" placeholder="Select scent family"></app-form-select>
-          <app-form-select formControlName="gender" label="Gender" [options]="genderOptions" placeholder=""></app-form-select>
+          <app-form-select formControlName="gender" label="Gender" [options]="genderOptions"
+            placeholder=""></app-form-select>
           <app-form-input formControlName="releaseDate" type="date" label="Release Date"></app-form-input>
         </div>
         <div class="mt-6">
@@ -63,11 +64,17 @@
         </div>
       </div>
 
+      <!-- Images -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Product Images</h2>
+        <app-image-upload formControlName="images" (existingImageRemoved)="onExistingImageRemoved($event)"></app-image-upload>
+      </div>
+
       <!-- Pricing & Inventory -->
       <app-pricing-inventory formControlName="sizes"></app-pricing-inventory>
 
       <!-- Form Actions -->
-      <div class="flex justify-end gap-4">
+      <div class="flex justify-end gap-4 mt-6">
         <a routerLink="/perfumes"
           class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
           Cancel

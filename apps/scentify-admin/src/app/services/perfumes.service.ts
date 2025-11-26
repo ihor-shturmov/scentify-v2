@@ -5,7 +5,7 @@ import { Perfume } from "@scentify/shared-types";
 
 @Injectable({ providedIn: 'root' })
 export class PerfumesService {
-    private apiUrl = 'http://localhost:3002/api/perfumes';
+    private apiUrl = '/api/perfumes';
     private http: HttpClient = inject(HttpClient);
 
     getPerfumes(): Observable<Perfume[]> {
