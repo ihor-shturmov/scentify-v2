@@ -58,13 +58,20 @@ export class PerfumeFormComponent {
       const id = this.activatedRoute.snapshot.params['id'];
       if (id) {
         this.perfumeId = id;
+      } else {
+        // Creating new perfume - clear any existing data
+        this.perfumeId = null;
+        this.perfumesStore.clearSelectedPerfume();
+        this.perfumeForm.reset({
+          gender: 'unisex'
+        });
       }
     });
 
     // Watch for selectedPerfume changes
     effect(() => {
       const perfume = this.perfumesStore.selectedPerfume();
-      if (perfume) {
+      if (perfume && this.perfumeId) {
         this.patchFormWithPerfume(perfume);
       }
     });

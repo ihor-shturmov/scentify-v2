@@ -39,6 +39,11 @@ export const PerfumesStore = signalStore(
         hasPerfumes: computed(() => perfumes().length > 0),
     })),
     withMethods((store, perfumesService = inject(PerfumesService), uploadService = inject(UploadService)) => ({
+        // Clear selected perfume
+        clearSelectedPerfume: () => {
+            patchState(store, { selectedPerfume: null });
+        },
+
         // Load all perfumes
         loadPerfumes: rxMethod<void>(
             pipe(
