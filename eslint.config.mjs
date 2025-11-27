@@ -40,7 +40,9 @@ export default [
       '**/*.cjs',
       '**/*.mjs',
     ],
-    // Override or add rules here
-    rules: {},
+    rules: {
+      // Disallow explicit any types
+      '@typescript-eslint/no-explicit-any': 'error',
+    },
   },
 ];

@@ -14,38 +14,38 @@ export class UserRepository implements IUserRepository {
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>
     ) { }
 
-    async findAll(): Promise<User[]> {
+    async findAll(): Promise<UserDocument[]> {
         return this.userModel.find().exec();
     }
 
-    async findById(id: string): Promise<User | null> {
+    async findById(id: string): Promise<UserDocument | null> {
         return this.userModel.findById(id).exec();
     }
 
-    async findByEmail(email: string): Promise<User | null> {
+    async findByEmail(email: string): Promise<UserDocument | null> {
         return this.userModel.findOne({ email }).exec();
     }
 
-    async create(userData: Partial<User>): Promise<User> {
+    async create(userData: Partial<User>): Promise<UserDocument> {
         const user = new this.userModel(userData);
         return user.save();
     }
 
-    async update(id: string, userData: Partial<User>): Promise<User | null> {
+    async update(id: string, userData: Partial<User>): Promise<UserDocument | null> {
         return this.userModel
             .findByIdAndUpdate(id, userData, { new: true })
             .exec();
     }
 
-    async delete(id: string): Promise<User | null> {
+    async delete(id: string): Promise<UserDocument | null> {
         return this.userModel.findByIdAndDelete(id).exec();
     }
 
-    async findActive(): Promise<User[]> {
+    async findActive(): Promise<UserDocument[]> {
         return this.userModel.find({ isActive: true }).exec();
     }
 
-    async findByRole(role: 'admin' | 'user'): Promise<User[]> {
+    async findByRole(role: 'admin' | 'user'): Promise<UserDocument[]> {
         return this.userModel.find({ role }).exec();
     }
 }

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository';
-import { User } from './schemas/user.schema';
+import { UserDocument } from './schemas/user.schema';
 
 /**
  * Users Service
@@ -10,11 +10,11 @@ import { User } from './schemas/user.schema';
 export class UsersService {
     constructor(private readonly userRepository: UserRepository) { }
 
-    async findAll(): Promise<User[]> {
+    async findAll(): Promise<UserDocument[]> {
         return this.userRepository.findAll();
     }
 
-    async findOne(id: string): Promise<User> {
+    async findOne(id: string): Promise<UserDocument> {
         const user = await this.userRepository.findById(id);
         if (!user) {
             throw new NotFoundException(`User with ID ${id} not found`);
@@ -22,7 +22,7 @@ export class UsersService {
         return user;
     }
 
-    async update(id: string, updateData: Partial<User>): Promise<User> {
+    async update(id: string, updateData: Partial<UserDocument>): Promise<UserDocument> {
         const user = await this.userRepository.update(id, updateData);
         if (!user) {
             throw new NotFoundException(`User with ID ${id} not found`);
@@ -30,7 +30,7 @@ export class UsersService {
         return user;
     }
 
-    async remove(id: string): Promise<User> {
+    async remove(id: string): Promise<UserDocument> {
         const user = await this.userRepository.delete(id);
         if (!user) {
             throw new NotFoundException(`User with ID ${id} not found`);
@@ -38,15 +38,15 @@ export class UsersService {
         return user;
     }
 
-    async findByEmail(email: string): Promise<User | null> {
+    async findByEmail(email: string): Promise<UserDocument | null> {
         return this.userRepository.findByEmail(email);
     }
 
-    async findActive(): Promise<User[]> {
+    async findActive(): Promise<UserDocument[]> {
         return this.userRepository.findActive();
     }
 
-    async findByRole(role: 'admin' | 'user'): Promise<User[]> {
+    async findByRole(role: 'admin' | 'user'): Promise<UserDocument[]> {
         return this.userRepository.findByRole(role);
     }
 }

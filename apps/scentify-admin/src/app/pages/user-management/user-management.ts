@@ -1,49 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserService, User } from '../../services/user.service';
+import { UsersStore } from '../../store/users.store';
 
 @Component({
     selector: 'app-user-management',
     standalone: true,
     imports: [CommonModule, FormsModule],
     templateUrl: './user-management.html',
-    styleUrl: './user-management.css'
 })
 export class UserManagementComponent implements OnInit {
-    users: User[] = [];
-    filteredUsers: User[] = [];
+    private readonly usersStore = inject(UsersStore);
+
+    // Store signals
+    users = this.usersStore.users;
+    isLoading = this.usersStore.isLoading;
+    error = this.usersStore.error;
+    userCount = this.usersStore.userCount;
+    activeUserCount = this.usersStore.activeUserCount;
+    inactiveUserCount = this.usersStore.inactiveUserCount;
+    adminCount = this.usersStore.adminCount;
+    regularUserCount = this.usersStore.regularUserCount;
+
+    // Local filter state
     searchQuery = '';
     selectedRole: string = '';
     selectedStatus: string = '';
-    loading = false;
-    error: string | null = null;
 
-    constructor(private userService: UserService) { }
-
-    ngOnInit() {
-        this.loadUsers();
-    }
-
-    loadUsers() {
-        this.loading = true;
-        this.error = null;
-        this.userService.getUsers().subscribe({
-            next: (users) => {
-                this.users = users;
-                this.applyFilters();
-                this.loading = false;
-            },
-            error: (err) => {
-                this.error = 'Failed to load users. Please try again.';
-                this.loading = false;
-                console.error('Error loading users:', err);
-            }
-        });
-    }
-
-    applyFilters() {
-        this.filteredUsers = this.users.filter(user => {
+    // Computed filtered users
+    filteredUsers = computed(() => {
+        const users = this.users();
+        return users.filter(user => {
             const matchesSearch =
                 user.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                 user.lastName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
@@ -56,53 +43,37 @@ export class UserManagementComponent implements OnInit {
 
             return matchesSearch && matchesRole && matchesStatus;
         });
+    });
+
+    ngOnInit() {
+        this.usersStore.loadUsers();
     }
 
-    editUser(user: User) {
+    applyFilters() {
+        // Trigger change detection by updating filter properties
+        this.searchQuery = this.searchQuery;
+    }
+
+    editUser(user: any) {
         // TODO: Implement edit functionality
         console.log('Edit user:', user);
     }
 
-    deleteUser(user: User) {
+    deleteUser(user: any) {
         if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
-            this.userService.deleteUser(user._id).subscribe({
-                next: () => {
-                    this.users = this.users.filter(u => u._id !== user._id);
-                    this.applyFilters();
-                },
-                error: (err) => {
-                    this.error = 'Failed to delete user. Please try again.';
-                    console.error('Error deleting user:', err);
-                }
-            });
+            this.usersStore.deleteUser(user.id);
         }
     }
 
-    toggleStatus(user: User) {
-        const newStatus = !user.isActive;
-        this.userService.updateUser(user._id, { isActive: newStatus }).subscribe({
-            next: (updatedUser) => {
-                user.isActive = updatedUser.isActive;
-                this.applyFilters();
-            },
-            error: (err) => {
-                this.error = 'Failed to update user status. Please try again.';
-                console.error('Error updating status:', err);
-            }
-        });
+    toggleStatus(user: any) {
+        this.usersStore.toggleUserStatus(user.id);
     }
 
-    changeRole(user: User) {
-        const newRole = user.role === 'admin' ? 'user' : 'admin';
-        this.userService.updateUser(user._id, { role: newRole }).subscribe({
-            next: (updatedUser) => {
-                user.role = updatedUser.role as 'admin' | 'user';
-                this.applyFilters();
-            },
-            error: (err) => {
-                this.error = 'Failed to update user role. Please try again.';
-                console.error('Error updating role:', err);
-            }
-        });
+    changeRole(user: any) {
+        this.usersStore.changeUserRole(user.id);
+    }
+
+    clearError() {
+        this.usersStore.clearError();
     }
 }

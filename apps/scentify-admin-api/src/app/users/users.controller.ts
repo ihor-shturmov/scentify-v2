@@ -7,32 +7,41 @@ import {
     Body,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from './schemas/user.schema';
+import type { UpdateUserDto } from './dto/user-response.dto';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
 
     @Get()
-    findAll(): Promise<User[]> {
-        return this.usersService.findAll();
+    async findAll(): Promise<UserResponseDto[]> {
+        const users = await this.usersService.findAll();
+        // toJSON transformation happens automatically
+        return users.map(user => user.toJSON() as UserResponseDto);
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string): Promise<User | null> {
-        return this.usersService.findOne(id);
+    async findOne(@Param('id') id: string): Promise<UserResponseDto> {
+        const user = await this.usersService.findOne(id);
+        // toJSON transformation happens automatically
+        return user.toJSON() as UserResponseDto;
     }
 
     @Patch(':id')
-    update(
+    async update(
         @Param('id') id: string,
-        @Body() updateData: Partial<User>
-    ): Promise<User | null> {
-        return this.usersService.update(id, updateData);
+        @Body() updateData: UpdateUserDto
+    ): Promise<UserResponseDto> {
+        const user = await this.usersService.update(id, updateData);
+        // toJSON transformation happens automatically
+        return user.toJSON() as UserResponseDto;
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string): Promise<User | null> {
-        return this.usersService.remove(id);
+    async remove(@Param('id') id: string): Promise<UserResponseDto> {
+        const user = await this.usersService.remove(id);
+        // toJSON transformation happens automatically
+        return user.toJSON() as UserResponseDto;
     }
 }

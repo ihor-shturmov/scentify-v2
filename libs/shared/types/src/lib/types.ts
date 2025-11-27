@@ -133,6 +133,21 @@ export interface User {
 }
 
 /**
+ * Admin User entity for user management
+ */
+export interface AdminUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: 'admin' | 'user';
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  lastLogin?: Date;
+}
+
+/**
  * User address
  */
 export interface Address {

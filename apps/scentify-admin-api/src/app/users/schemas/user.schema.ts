@@ -28,3 +28,24 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+// Virtual `id` that mirrors `_id`
+UserSchema.virtual('id').get(function (this: UserDocument) {
+    return this._id.toHexString();
+});
+
+// Control JSON output (what gets sent to frontend)
+UserSchema.set('toJSON', {
+    virtuals: true,      // include `id`
+    versionKey: false,   // hide `__v`
+    transform: (_: any, ret: any) => {
+        delete ret._id;      // hide original _id
+        delete ret.passwordHash; // never expose password hash
+        return ret;
+    },
+});
+
+// Indexes for better query performance
+UserSchema.index({ email: 1 });
+UserSchema.index({ role: 1 });
+UserSchema.index({ isActive: 1 });
