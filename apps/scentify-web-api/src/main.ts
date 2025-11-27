@@ -43,8 +43,9 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Not Found' });
 });
 
+
 // Error handler
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal Server Error' });
 });

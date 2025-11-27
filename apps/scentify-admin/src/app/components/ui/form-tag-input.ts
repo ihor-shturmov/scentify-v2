@@ -8,13 +8,14 @@ import { FormsModule } from '@angular/forms';
     imports: [CommonModule, FormsModule],
     template: `
     <div class="w-full">
-      <label *ngIf="label" class="block text-sm font-medium text-gray-700 mb-2">
+      <label *ngIf="label" [for]="inputId" class="block text-sm font-medium text-gray-700 mb-2">
         {{ label }}
       </label>
       
       <!-- Input Section -->
       <div class="flex gap-2 mb-2">
         <input
+          [id]="inputId"
           type="text"
           [(ngModel)]="inputValue"
           [placeholder]="placeholder"
@@ -58,6 +59,7 @@ export class FormTagInputComponent {
     @Output() tagAdded = new EventEmitter<string>();
     @Output() tagRemoved = new EventEmitter<number>();
 
+    inputId = `tag-input-${Math.random().toString(36).substring(2, 9)}`;
     inputValue = '';
 
     onAdd(event: Event): void {

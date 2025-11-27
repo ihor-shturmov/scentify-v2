@@ -33,8 +33,9 @@ router.post('/signup', async (req, res) => {
             },
             token
         });
-    } catch (error: any) {
-        if (error.code === 11000) {
+    } catch (error: unknown) {
+        const err = error as { code?: number };
+        if (err.code === 11000) {
             logger.error(`User ${req.body.email} already exists`);
             return res.status(409).json({ message: 'Email already exists' });
         }

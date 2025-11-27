@@ -38,10 +38,11 @@ UserSchema.virtual('id').get(function (this: UserDocument) {
 UserSchema.set('toJSON', {
     virtuals: true,      // include `id`
     versionKey: false,   // hide `__v`
-    transform: (_: any, ret: any) => {
-        delete ret._id;      // hide original _id
-        delete ret.passwordHash; // never expose password hash
-        return ret;
+    transform: (_: unknown, ret: unknown) => {
+        const retObj = ret as Record<string, unknown>;
+        delete retObj._id;      // hide original _id
+        delete retObj.passwordHash; // never expose password hash
+        return retObj;
     },
 });
 

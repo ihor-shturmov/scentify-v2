@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, forwardRef, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
@@ -21,12 +21,13 @@ export interface SelectOption {
     ],
     template: `
     <div class="w-full">
-      <label *ngIf="label" class="block text-sm font-medium text-gray-700 mb-2">
+      <label *ngIf="label" [for]="selectId" class="block text-sm font-medium text-gray-700 mb-2">
         {{ label }}
         <span *ngIf="required" class="text-red-500">*</span>
       </label>
       <select
         #selectElement
+        [id]="selectId"
         [value]="value"
         (change)="onChange($event)"
         (blur)="onTouched()"
@@ -52,14 +53,17 @@ export class FormSelectComponent implements ControlValueAccessor, AfterViewInit 
     @Input() errorMessage = 'This field is required';
     @ViewChild('selectElement') selectElement?: ElementRef<HTMLSelectElement>;
 
-    value: string = '';
+    selectId = `select-${Math.random().toString(36).substring(2, 9)}`;
+    value = '';
     disabled = false;
     touched = false;
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     private onChangeFn: (value: string) => void = () => { };
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onTouched: () => void = () => { };
 
-    constructor(private cdr: ChangeDetectorRef) { }
+    private cdr = inject(ChangeDetectorRef);
 
     ngAfterViewInit(): void {
         // Ensure the select element has the correct value after rendering
@@ -86,7 +90,7 @@ export class FormSelectComponent implements ControlValueAccessor, AfterViewInit 
         this.onChangeFn(this.value);
     }
 
-    writeValue(value: any): void {
+    writeValue(value: string | null | undefined): void {
         if (value !== null && value !== undefined && value !== '') {
             this.value = String(value).trim();
         } else {

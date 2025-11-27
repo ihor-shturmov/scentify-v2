@@ -7,8 +7,9 @@ export class CloudinaryService {
     constructor(private cloudinaryProvider: CloudinaryProvider) { }
 
     async uploadImage(
-        file: Express.Multer.File,
-        folder: string = 'perfumes'
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        file: any, // Multer.File type has issues with TypeScript
+        folder = 'perfumes'
     ): Promise<UploadApiResponse | UploadApiErrorResponse> {
         const cloudinary = this.cloudinaryProvider.getCloudinary();
 
@@ -26,7 +27,8 @@ export class CloudinaryService {
                     },
                     (error, result) => {
                         if (error) return reject(error);
-                        resolve(result!);
+                        if (!result) return reject(new Error('Upload failed - no result'));
+                        resolve(result);
                     }
                 )
                 .end(file.buffer);
@@ -34,15 +36,16 @@ export class CloudinaryService {
     }
 
     async uploadMultipleImages(
-        files: Express.Multer.File[],
-        folder: string = 'perfumes'
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        files: any[], // Multer.File[] type has issues with TypeScript
+        folder = 'perfumes'
     ): Promise<string[]> {
         const uploadPromises = files.map((file) => this.uploadImage(file, folder));
         const results = await Promise.all(uploadPromises);
         return results.map((result) => result.secure_url);
     }
 
-    async deleteImage(publicId: string): Promise<any> {
+    async deleteImage(publicId: string): Promise<{ result: string }> {
         const cloudinary = this.cloudinaryProvider.getCloudinary();
         return cloudinary.uploader.destroy(publicId);
     }

@@ -2,6 +2,7 @@ import { Component, OnInit, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsersStore } from '../../store/users.store';
+import { AdminUser } from '@scentify/shared-types';
 
 @Component({
     selector: 'app-user-management',
@@ -24,8 +25,8 @@ export class UserManagementComponent implements OnInit {
 
     // Local filter state
     searchQuery = '';
-    selectedRole: string = '';
-    selectedStatus: string = '';
+    selectedRole = '';
+    selectedStatus = '';
 
     // Computed filtered users
     filteredUsers = computed(() => {
@@ -50,26 +51,25 @@ export class UserManagementComponent implements OnInit {
     }
 
     applyFilters() {
-        // Trigger change detection by updating filter properties
-        this.searchQuery = this.searchQuery;
+        // Filters are applied automatically via computed signal
     }
 
-    editUser(user: any) {
+    editUser(user: AdminUser) {
         // TODO: Implement edit functionality
         console.log('Edit user:', user);
     }
 
-    deleteUser(user: any) {
+    deleteUser(user: AdminUser) {
         if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
             this.usersStore.deleteUser(user.id);
         }
     }
 
-    toggleStatus(user: any) {
+    toggleStatus(user: AdminUser) {
         this.usersStore.toggleUserStatus(user.id);
     }
 
-    changeRole(user: any) {
+    changeRole(user: AdminUser) {
         this.usersStore.changeUserRole(user.id);
     }
 

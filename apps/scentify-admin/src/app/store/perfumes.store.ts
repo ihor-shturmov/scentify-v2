@@ -174,6 +174,7 @@ export const PerfumesStore = signalStore(
                 tap(() => patchState(store, { isLoading: true, error: null })),
                 switchMap(({ perfumeData, perfumeId, images, onSuccess }) => {
                     // Remove images from perfume data
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const { images: _, ...dataWithoutImages } = perfumeData;
 
                     // Create or update perfume first
@@ -214,6 +215,7 @@ export const PerfumesStore = signalStore(
                             }
                         }),
                         tapResponse({
+                            // eslint-disable-next-line @typescript-eslint/no-empty-function
                             next: () => { },
                             error: (error: Error) =>
                                 patchState(store, {
@@ -251,8 +253,8 @@ export const PerfumesStore = signalStore(
                                         ? { ...p, images: response.images }
                                         : p
                                 );
-                                const updatedSelectedPerfume = store.selectedPerfume()?.id === perfumeId
-                                    ? { ...store.selectedPerfume()!, images: response.images }
+                                const updatedSelectedPerfume = store.selectedPerfume()?.id === perfumeId && store.selectedPerfume()
+                                    ? { ...store.selectedPerfume() as Perfume, images: response.images }
                                     : store.selectedPerfume();
 
                                 patchState(store, {
@@ -286,12 +288,13 @@ export const PerfumesStore = signalStore(
                                         ? { ...p, images: (p.images || []).filter(img => img !== imageUrl) }
                                         : p
                                 );
-                                const updatedSelectedPerfume = store.selectedPerfume()?.id === perfumeId
+                                const selectedPerfume = store.selectedPerfume();
+                                const updatedSelectedPerfume = selectedPerfume?.id === perfumeId && selectedPerfume
                                     ? {
-                                        ...store.selectedPerfume()!,
-                                        images: (store.selectedPerfume()!.images || []).filter(img => img !== imageUrl)
+                                        ...selectedPerfume,
+                                        images: (selectedPerfume.images || []).filter(img => img !== imageUrl)
                                     }
-                                    : store.selectedPerfume();
+                                    : selectedPerfume;
 
                                 patchState(store, {
                                     perfumes: updatedPerfumes,

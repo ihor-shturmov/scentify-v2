@@ -14,7 +14,7 @@ interface AuthState {
     isAuthenticated: boolean;
     setUser: (user: User, token: string) => void;
     logout: () => void;
-    getAuthHeader: () => { Authorization: string } | {};
+    getAuthHeader: () => { Authorization: string } | Record<string, never>;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthState>()(
             logout: () => set({ user: null, token: null, isAuthenticated: false }),
             getAuthHeader: () => {
                 const token = get().token;
-                return token ? { Authorization: `Bearer ${token}` } : {};
+                return token ? { Authorization: `Bearer ${token}` } : {} as Record<string, never>;
             },
         }),
         {

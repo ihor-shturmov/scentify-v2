@@ -32,7 +32,7 @@ export function formatDateForInput(date: string | Date | undefined): string {
  */
 export function formatDateForDisplay(
   date: string | Date | undefined,
-  locale: string = 'en-US'
+  locale = 'en-US'
 ): string {
   if (!date) return '';
 
@@ -60,7 +60,7 @@ export function formatDateForDisplay(
  */
 export function formatDateTimeForDisplay(
   date: string | Date | undefined,
-  locale: string = 'en-US'
+  locale = 'en-US'
 ): string {
   if (!date) return '';
 

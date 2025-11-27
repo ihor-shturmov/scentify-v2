@@ -3,29 +3,29 @@ import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 interface ImageFile {
-    file: File;
-    preview: string;
+  file: File;
+  preview: string;
 }
 
 @Component({
-    selector: 'app-image-upload',
-    standalone: true,
-    imports: [CommonModule],
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => ImageUploadComponent),
-            multi: true
-        }
-    ],
-    template: `
+  selector: 'app-image-upload',
+  standalone: true,
+  imports: [CommonModule],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => ImageUploadComponent),
+      multi: true
+    }
+  ],
+  template: `
     <div class="space-y-4">
-      <label class="block text-sm font-medium text-gray-700 mb-2">
+      <span [id]="labelId" class="block text-sm font-medium text-gray-700 mb-2">
         {{ label }}
         @if (required) {
           <span class="text-red-500">*</span>
         }
-      </label>
+      </span>
 
       <!-- Upload Area -->
       <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-purple-500 transition-colors">
@@ -34,6 +34,7 @@ interface ImageFile {
           type="file"
           multiple
           accept="image/*"
+          [attr.aria-labelledby]="labelId"
           (change)="onFileSelect($event)"
           class="hidden"
         />
@@ -118,132 +119,136 @@ interface ImageFile {
   `
 })
 export class ImageUploadComponent implements ControlValueAccessor {
-    @Input() label = 'Images';
-    @Input() required = false;
-    @Output() existingImageRemoved = new EventEmitter<string>();
+  @Input() label = 'Images';
+  @Input() required = false;
+  @Output() existingImageRemoved = new EventEmitter<string>();
 
-    imageFiles: ImageFile[] = [];
-    existingImages: string[] = [];
-    errorMessage = '';
+  labelId = `image-upload-label-${Math.random().toString(36).substring(2, 9)}`;
+  imageFiles: ImageFile[] = [];
+  existingImages: string[] = [];
+  errorMessage = '';
 
-    onChange: (value: File[]) => void = () => { };
-    onTouched: () => void = () => { };
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  onChange: (value: File[]) => void = () => { };
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  onTouched: () => void = () => { };
 
-    onFileSelect(event: Event): void {
-        const input = event.target as HTMLInputElement;
-        if (!input.files || input.files.length === 0) return;
+  onFileSelect(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
 
-        const files = Array.from(input.files);
-        const totalImages = files.length + this.imageFiles.length + this.existingImages.length;
+    const files = Array.from(input.files);
+    const totalImages = files.length + this.imageFiles.length + this.existingImages.length;
 
-        // Validate file count
-        if (totalImages > 10) {
-            this.errorMessage = 'Maximum 10 images allowed';
-            return;
-        }
+    // Validate file count
+    if (totalImages > 10) {
+      this.errorMessage = 'Maximum 10 images allowed';
+      return;
+    }
 
-        // Validate file sizes
-        const maxSize = 10 * 1024 * 1024; // 10MB
-        const oversizedFiles = files.filter(f => f.size > maxSize);
-        if (oversizedFiles.length > 0) {
-            this.errorMessage = 'Some files exceed 10MB limit';
-            return;
-        }
+    // Validate file sizes
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const oversizedFiles = files.filter(f => f.size > maxSize);
+    if (oversizedFiles.length > 0) {
+      this.errorMessage = 'Some files exceed 10MB limit';
+      return;
+    }
 
-        // Validate file types
-        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-        const invalidFiles = files.filter(f => !validTypes.includes(f.type));
-        if (invalidFiles.length > 0) {
-            this.errorMessage = 'Only JPEG, PNG, and WebP images are allowed';
-            return;
-        }
+    // Validate file types
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+    const invalidFiles = files.filter(f => !validTypes.includes(f.type));
+    if (invalidFiles.length > 0) {
+      this.errorMessage = 'Only JPEG, PNG, and WebP images are allowed';
+      return;
+    }
 
-        this.errorMessage = '';
+    this.errorMessage = '';
 
-        // Create preview URLs
-        files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.imageFiles.push({
-                    file,
-                    preview: e.target?.result as string
-                });
-                this.emitChange();
-            };
-            reader.readAsDataURL(file);
+    // Create preview URLs
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imageFiles.push({
+          file,
+          preview: e.target?.result as string
         });
-
-        // Reset input
-        input.value = '';
-    }
-
-    removeExistingImage(index: number): void {
-        const imageUrl = this.existingImages[index];
-        this.existingImages = this.existingImages.filter((_, i) => i !== index);
-        this.existingImageRemoved.emit(imageUrl);
-    }
-
-    removeImage(index: number): void {
-        // Revoke object URL to prevent memory leaks
-        const imageFile = this.imageFiles[index];
-        if (imageFile.preview.startsWith('blob:')) {
-            URL.revokeObjectURL(imageFile.preview);
-        }
-
-        this.imageFiles = this.imageFiles.filter((_, i) => i !== index);
         this.emitChange();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset input
+    input.value = '';
+  }
+
+  removeExistingImage(index: number): void {
+    const imageUrl = this.existingImages[index];
+    this.existingImages = this.existingImages.filter((_, i) => i !== index);
+    this.existingImageRemoved.emit(imageUrl);
+  }
+
+  removeImage(index: number): void {
+    // Revoke object URL to prevent memory leaks
+    const imageFile = this.imageFiles[index];
+    if (imageFile.preview.startsWith('blob:')) {
+      URL.revokeObjectURL(imageFile.preview);
     }
 
-    formatFileSize(bytes: number): string {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    this.imageFiles = this.imageFiles.filter((_, i) => i !== index);
+    this.emitChange();
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  private emitChange(): void {
+    const files = this.imageFiles.map(img => img.file);
+    this.onChange(files);
+    this.onTouched();
+  }
+
+  writeValue(value: (File | string)[] | null): void {
+    if (!value || value.length === 0) {
+      this.imageFiles = [];
+      this.existingImages = [];
+      return;
     }
 
-    private emitChange(): void {
-        const files = this.imageFiles.map(img => img.file);
-        this.onChange(files);
-        this.onTouched();
-    }
+    // Separate existing URLs from new files
+    this.existingImages = value.filter((v): v is string => typeof v === 'string');
 
-    writeValue(value: (File | string)[] | null): void {
-        if (!value || value.length === 0) {
-            this.imageFiles = [];
-            this.existingImages = [];
-            return;
-        }
-
-        // Separate existing URLs from new files
-        this.existingImages = value.filter((v): v is string => typeof v === 'string');
-        
-        // Handle File objects if any
-        const files = value.filter((v): v is File => v instanceof File);
-        if (files.length > 0) {
-            this.imageFiles = [];
-            files.forEach(file => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.imageFiles.push({
-                        file,
-                        preview: e.target?.result as string
-                    });
-                };
-                reader.readAsDataURL(file);
-            });
-        }
+    // Handle File objects if any
+    const files = value.filter((v): v is File => v instanceof File);
+    if (files.length > 0) {
+      this.imageFiles = [];
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.imageFiles.push({
+            file,
+            preview: e.target?.result as string
+          });
+        };
+        reader.readAsDataURL(file);
+      });
     }
+  }
 
-    registerOnChange(fn: (value: File[]) => void): void {
-        this.onChange = fn;
-    }
+  registerOnChange(fn: (value: File[]) => void): void {
+    this.onChange = fn;
+  }
 
-    registerOnTouched(fn: () => void): void {
-        this.onTouched = fn;
-    }
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
 
-    setDisabledState(isDisabled: boolean): void {
-        // Handle disabled state if needed
-    }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setDisabledState(isDisabled: boolean): void {
+    // Handle disabled state if needed
+  }
 }

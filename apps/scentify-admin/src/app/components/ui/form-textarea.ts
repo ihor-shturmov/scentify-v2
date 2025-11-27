@@ -15,11 +15,12 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
     ],
     template: `
     <div class="w-full">
-      <label *ngIf="label" class="block text-sm font-medium text-gray-700 mb-2">
+      <label *ngIf="label" [for]="textareaId" class="block text-sm font-medium text-gray-700 mb-2">
         {{ label }}
         <span *ngIf="required" class="text-red-500">*</span>
       </label>
       <textarea
+        [id]="textareaId"
         [placeholder]="placeholder"
         [rows]="rows"
         [value]="value"
@@ -41,11 +42,14 @@ export class FormTextareaComponent implements ControlValueAccessor {
     @Input() required = false;
     @Input() errorMessage = 'This field is required';
 
+    textareaId = `textarea-${Math.random().toString(36).substring(2, 9)}`;
     value = '';
     disabled = false;
     touched = false;
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onChange: (value: string) => void = () => { };
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onTouched: () => void = () => { };
 
     get textareaClasses(): string {

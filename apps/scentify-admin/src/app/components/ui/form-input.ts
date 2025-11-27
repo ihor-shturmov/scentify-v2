@@ -15,11 +15,12 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
     ],
     template: `
     <div class="w-full">
-      <label *ngIf="label" class="block text-sm font-medium text-gray-700 mb-2">
+      <label *ngIf="label" [for]="inputId" class="block text-sm font-medium text-gray-700 mb-2">
         {{ label }}
         <span *ngIf="required" class="text-red-500">*</span>
       </label>
       <input
+        [id]="inputId"
         [type]="type"
         [placeholder]="placeholder"
         [value]="value"
@@ -45,11 +46,14 @@ export class FormInputComponent implements ControlValueAccessor {
     @Input() min?: number;
     @Input() max?: number;
 
+    inputId = `input-${Math.random().toString(36).substring(2, 9)}`;
     value = '';
     disabled = false;
     touched = false;
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onChange: (value: string) => void = () => { };
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onTouched: () => void = () => { };
 
     get inputClasses(): string {

@@ -8,15 +8,16 @@ router.get('/', async (req: Request, res: Response) => {
     try {
         const { scentFamily, gender, minPrice, maxPrice, search, sort = '-createdAt', limit = 50 } = req.query;
 
-        const query: any = {};
+        const query: Record<string, unknown> = {};
 
         // Filters
         if (scentFamily) query.scentFamily = scentFamily;
         if (gender) query.gender = gender;
         if (minPrice || maxPrice) {
-            query.price = {};
-            if (minPrice) query.price.$gte = Number(minPrice);
-            if (maxPrice) query.price.$lte = Number(maxPrice);
+            const priceFilter: Record<string, number> = {};
+            if (minPrice) priceFilter.$gte = Number(minPrice);
+            if (maxPrice) priceFilter.$lte = Number(maxPrice);
+            query.price = priceFilter;
         }
         if (search) {
             query.$text = { $search: search as string };
