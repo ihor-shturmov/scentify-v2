@@ -15,7 +15,7 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/apps/scentify-admin",
+        "outputPath": "dist/apps/admin",
         "browser": "apps/scentify-admin/src/main.ts",
         "polyfills": [
           "zone.js"
@@ -95,7 +95,7 @@
       "executor": "@nx/web:file-server",
       "options": {
         "buildTarget": "scentify-admin:build",
-        "staticFilePath": "dist/apps/scentify-admin/browser",
+        "staticFilePath": "dist/apps/admin/browser",
         "spa": true
       }
     }

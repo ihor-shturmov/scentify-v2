@@ -9,7 +9,14 @@
     "dev:admin": "nx serve scentify-admin",
     "dev:admin-api": "nx serve scentify-admin-api",
     "dev:frontend": "nx run-many --target=serve --projects=scentify-web,scentify-admin --parallel=2",
-    "dev:backend": "nx run-many --target=serve --projects=scentify-web-api,scentify-admin-api --parallel=2"
+    "dev:backend": "nx run-many --target=serve --projects=scentify-web-api,scentify-admin-api --parallel=2",
+    "build": "nx run-many --target=build --projects=scentify-web,scentify-web-api,scentify-admin,scentify-admin-api --parallel=4",
+    "build:web": "nx build scentify-web",
+    "build:web-api": "nx build scentify-web-api",
+    "build:admin": "nx build scentify-admin",
+    "build:admin-api": "nx build scentify-admin-api",
+    "build:frontend": "nx run-many --target=build --projects=scentify-web,scentify-admin --parallel=2",
+    "build:backend": "nx run-many --target=build --projects=scentify-web-api,scentify-admin-api --parallel=2"
   },
   "private": true,
   "devDependencies": {
