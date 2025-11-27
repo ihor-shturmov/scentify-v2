@@ -16,7 +16,15 @@
     "build:admin": "nx build scentify-admin",
     "build:admin-api": "nx build scentify-admin-api",
     "build:frontend": "nx run-many --target=build --projects=scentify-web,scentify-admin --parallel=2",
-    "build:backend": "nx run-many --target=build --projects=scentify-web-api,scentify-admin-api --parallel=2"
+    "build:backend": "nx run-many --target=build --projects=scentify-web-api,scentify-admin-api --parallel=2",
+    "start:web-api": "node dist/apps/client-api/main.js",
+    "start:admin-api": "node dist/apps/admin-api/main.js",
+    "lint": "nx run-many --target=lint --all",
+    "lint:fix": "nx run-many --target=lint --all --fix",
+    "test": "nx run-many --target=test --all",
+    "test:watch": "nx run-many --target=test --all --watch",
+    "format": "nx format:write",
+    "format:check": "nx format:check"
   },
   "private": true,
   "devDependencies": {

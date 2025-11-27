@@ -12,7 +12,7 @@
         "defaultConfiguration": "production",
         "options": {
           "platform": "node",
-          "outputPath": "apps/scentify-web-api/dist",
+          "outputPath": "dist/apps/client-api",
           "format": [
             "cjs"
           ],
@@ -48,8 +48,8 @@
         "cache": true,
         "executor": "@nx/js:prune-lockfile",
         "outputs": [
-          "{workspaceRoot}/apps/scentify-web-api/dist/package.json",
-          "{workspaceRoot}/apps/scentify-web-api/dist/package-lock.json"
+          "{workspaceRoot}/dist/apps/client-api/package.json",
+          "{workspaceRoot}/dist/apps/client-api/package-lock.json"
         ],
         "options": {
           "buildTarget": "build"
@@ -61,7 +61,7 @@
         ],
         "cache": true,
         "outputs": [
-          "{workspaceRoot}/apps/scentify-web-api/dist/workspace_modules"
+          "{workspaceRoot}/dist/apps/client-api/workspace_modules"
         ],
         "executor": "@nx/js:copy-workspace-modules",
         "options": {

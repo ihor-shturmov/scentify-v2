@@ -29,8 +29,8 @@
         "cache": true,
         "executor": "@nx/js:prune-lockfile",
         "outputs": [
-          "{workspaceRoot}/apps/scentify-admin-api/dist/package.json",
-          "{workspaceRoot}/apps/scentify-admin-api/dist/package-lock.json"
+          "{workspaceRoot}/dist/apps/admin-api/package.json",
+          "{workspaceRoot}/dist/apps/admin-api/package-lock.json"
         ],
         "options": {
           "buildTarget": "build"
@@ -42,7 +42,7 @@
         ],
         "cache": true,
         "outputs": [
-          "{workspaceRoot}/apps/scentify-admin-api/dist/workspace_modules"
+          "{workspaceRoot}/dist/apps/admin-api/workspace_modules"
         ],
         "executor": "@nx/js:copy-workspace-modules",
         "options": {
