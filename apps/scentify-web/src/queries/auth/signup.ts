@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { SignUpSchemaType } from "../../types/signup";
 import { useAuthStore } from "../../store/auth.store";
+import { config } from "../../lib/config";
 
 function useSignup() {
     const navigate = useNavigate();
@@ -9,7 +10,7 @@ function useSignup() {
 
     const { mutateAsync, ...rest } = useMutation({
         mutationFn: async (data: SignUpSchemaType) => {
-            const response = await fetch('/api/auth/signup', {
+            const response = await fetch(`${config.apiUrl}/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

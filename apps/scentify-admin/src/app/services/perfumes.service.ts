@@ -2,10 +2,11 @@ import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { Perfume } from "@scentify/shared-types";
+import { environment } from "../../environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class PerfumesService {
-    private apiUrl = '/api/perfumes';
+    private apiUrl = `${environment.apiUrl}/perfumes`;
     private http: HttpClient = inject(HttpClient);
 
     getPerfumes(): Observable<Perfume[]> {
