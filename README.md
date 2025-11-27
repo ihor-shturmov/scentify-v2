@@ -2,6 +2,11 @@
 
 A modern, scalable NX monorepo for a perfume e-commerce application with React customer frontend, Angular admin panel, and Node.js/NestJS backends.
 
+## 🌐 Live Demos
+
+- **Customer App**: [https://scentify-client.vercel.app/](https://scentify-client.vercel.app/)
+- **Admin Panel**: [https://scentify-admin.vercel.app/](https://scentify-admin.vercel.app/)
+
 ## 🚀 Quick Start
 
 ```bash
@@ -58,15 +63,6 @@ Shared utility functions and helpers.
 ### @scentify/shared-data-access
 API contracts and DTOs for frontend-backend communication.
 
-## 🎯 Development Guidelines
-
-See [`.agent/workflows/scentify-architecture-rules.md`](./.agent/workflows/scentify-architecture-rules.md) for:
-- Architecture best practices
-- Library categorization
-- Dependency rules
-- UI development guidelines
-- Perfume-specific features
-
 ## 🔧 Common Commands
 
 ```bash
@@ -100,12 +96,6 @@ As a UI developer, focus on:
 - Using `@scentify/shared-types` for type safety
 - Implementing perfume-specific features (scent filters, fragrance notes, quiz finder)
 - Creating stunning designs with micro-animations and dark mode
-
-## 📖 Documentation
-
-- **Walkthrough**: See artifact `walkthrough.md` for complete setup details
-- **Architecture Rules**: `.agent/workflows/scentify-architecture-rules.md`
-- **Task Breakdown**: See artifact `task.md`
 
 ## 🌸 Perfume Domain Features
 
