@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { DashboardStore } from '../../store/dashboard.store';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,20 +9,12 @@ import { RouterLink } from '@angular/router';
   templateUrl: './dashboard.html',
 })
 export class DashboardComponent {
-  stats = {
-    totalProducts: 156,
-    totalOrders: 1243,
-    revenue: 45678,
-    activeUsers: 892
-  };
+  private readonly dashboardStore = inject(DashboardStore);
 
-  recentOrders = [
-    { id: '1001', customer: 'John Doe', product: 'Chanel No. 5', amount: 120, status: 'Delivered', date: '2024-11-20' },
-    { id: '1002', customer: 'Jane Smith', product: 'Dior Sauvage', amount: 95, status: 'Shipped', date: '2024-11-21' },
-    { id: '1003', customer: 'Bob Johnson', product: 'Tom Ford Oud Wood', amount: 250, status: 'Processing', date: '2024-11-22' },
-    { id: '1004', customer: 'Alice Brown', product: 'Creed Aventus', amount: 350, status: 'Pending', date: '2024-11-23' },
-    { id: '1005', customer: 'Charlie Wilson', product: 'YSL Black Opium', amount: 110, status: 'Delivered', date: '2024-11-23' },
-  ];
+  // Expose store signals
+  stats = this.dashboardStore.stats;
+  recentOrders = this.dashboardStore.recentOrders;
+  isLoading = this.dashboardStore.isLoading;
 
   getStatusClass(status: string): string {
     const classes: Record<string, string> = {

@@ -6,9 +6,11 @@
     </div>
 
     <!-- Error Message -->
-    <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
-        {{ error }}
+    @if (error()) {
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+        {{ error() }}
     </div>
+    }
 
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
@@ -75,7 +77,8 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <tr *ngFor="let user of filteredUsers" class="hover:bg-gray-50">
+                    @for (user of filteredUsers(); track user.id) {
+                    <tr class="hover:bg-gray-50">
                         <!-- User -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
@@ -141,18 +144,22 @@
                             </button>
                         </td>
                     </tr>
+                    }
                 </tbody>
             </table>
         </div>
 
         <!-- Loading State -->
-        <div *ngIf="loading" class="text-center py-12">
+        @if (isLoading()) {
+        <div class="text-center py-12">
             <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
             <p class="mt-4 text-gray-600">Loading users...</p>
         </div>
+        }
 
         <!-- Empty State -->
-        <div *ngIf="!loading && filteredUsers.length === 0" class="text-center py-12">
+        @if (!isLoading() && filteredUsers().length === 0) {
+        <div class="text-center py-12">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -160,12 +167,13 @@
             <h3 class="mt-2 text-sm font-medium text-gray-900">No users found</h3>
             <p class="mt-1 text-sm text-gray-500">Try adjusting your search or filters.</p>
         </div>
+        }
     </div>
 
     <!-- Summary -->
     <div class="mt-6 flex items-center justify-between text-sm text-gray-500">
         <div>
-            Showing {{ filteredUsers.length }} of {{ users.length }} users
+            Showing {{ filteredUsers().length }} of {{ users().length }} users
         </div>
     </div>
 </div>

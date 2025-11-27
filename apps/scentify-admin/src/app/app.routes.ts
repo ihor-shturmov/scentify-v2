@@ -1,6 +1,7 @@
 import { Route } from '@angular/router';
 import { loadPerfumesResolver } from './resolvers/load-perfumes.resolver';
 import { loadPerfumeByIdResolver } from './resolvers/load-perfume-by-id.resolver';
+import { loadDashboardResolver } from './resolvers/load-dashboard.resolver';
 
 export const appRoutes: Route[] = [
     {
@@ -10,6 +11,9 @@ export const appRoutes: Route[] = [
     },
     {
         path: 'dashboard',
+        resolve: {
+            dashboard: loadDashboardResolver
+        },
         loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.DashboardComponent)
     },
     {
