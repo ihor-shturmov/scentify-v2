@@ -20,6 +20,12 @@ interface PerfumesState {
     isLoading: boolean;
     error: string | null;
     uploadingImages: boolean;
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
 }
 
 // Initial state
@@ -29,6 +35,12 @@ const initialState: PerfumesState = {
     isLoading: false,
     error: null,
     uploadingImages: false,
+    pagination: {
+        page: 1,
+        limit: 12,
+        total: 0,
+        totalPages: 0,
+    },
 };
 
 export const PerfumesStore = signalStore(
@@ -44,23 +56,29 @@ export const PerfumesStore = signalStore(
             patchState(store, { selectedPerfume: null });
         },
 
-        // Load all perfumes
-        loadPerfumes: rxMethod<void>(
+        // Load all perfumes with pagination
+        loadPerfumes: rxMethod<number | void>(
             pipe(
                 tap(() => patchState(store, { isLoading: true, error: null })),
-                switchMap(() =>
-                    perfumesService.getPerfumes().pipe(
+                switchMap((page) => {
+                    const currentPage = page || store.pagination().page;
+                    const limit = store.pagination().limit;
+                    return perfumesService.getPerfumes(currentPage, limit).pipe(
                         tapResponse({
-                            next: (perfumes) =>
-                                patchState(store, { perfumes, isLoading: false }),
+                            next: (response) =>
+                                patchState(store, {
+                                    perfumes: response.data,
+                                    pagination: response.pagination,
+                                    isLoading: false
+                                }),
                             error: (error: Error) =>
                                 patchState(store, {
                                     error: error.message,
                                     isLoading: false,
                                 }),
                         })
-                    )
-                )
+                    );
+                })
             )
         ),
 

@@ -3,15 +3,15 @@ import {
     Post,
     UploadedFiles,
     UseInterceptors,
-    BadRequestException,
     Param,
     Delete,
     Body,
+    ParseFilePipeBuilder,
+    HttpStatus,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { PerfumesService } from '../perfumes/perfumes.service';
-import { UploadPerfumeImageValidatePipe } from './upload-perfume-image-validate.pipe';
 
 @Controller('upload')
 export class UploadController {
@@ -24,7 +24,12 @@ export class UploadController {
     @UseInterceptors(FilesInterceptor('images', 10)) // Max 10 images
     async uploadPerfumeImages(
         @Param('id') perfumeId: string,
-        @UploadedFiles(new UploadPerfumeImageValidatePipe()) files: Express.Multer.File[]
+        @UploadedFiles(
+            new ParseFilePipeBuilder()
+                .addMaxSizeValidator({ maxSize: 10 * 1024 * 1024 })
+                .addFileTypeValidator({ fileType: 'image/*' })
+                .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY })
+        ) files: Express.Multer.File[]
     ) {
         // Upload images to Cloudinary
         const imageUrls = await this.cloudinaryService.uploadMultipleImages(

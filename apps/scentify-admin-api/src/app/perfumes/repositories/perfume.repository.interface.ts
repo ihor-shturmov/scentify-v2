@@ -5,7 +5,8 @@ import { Perfume } from '../schemas/perfume.schema';
  * Defines the contract for perfume data access operations
  */
 export interface IPerfumeRepository {
-    findAll(): Promise<Perfume[]>;
+    findAll(skip?: number, limit?: number): Promise<Perfume[]>;
+    count(): Promise<number>;
     findById(id: string): Promise<Perfume | null>;
     create(perfumeData: Partial<Perfume>): Promise<Perfume>;
     update(id: string, perfumeData: Partial<Perfume>): Promise<Perfume | null>;

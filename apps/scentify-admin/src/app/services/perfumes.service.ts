@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { Perfume } from "@scentify/shared-types";
+import { Perfume, PaginatedResponse } from "@scentify/shared-types";
 import { environment } from "../../environments/environment";
 
 @Injectable({ providedIn: 'root' })
@@ -9,8 +9,10 @@ export class PerfumesService {
     private apiUrl = `${environment.apiUrl}/perfumes`;
     private http: HttpClient = inject(HttpClient);
 
-    getPerfumes(): Observable<Perfume[]> {
-        return this.http.get<Perfume[]>(this.apiUrl);
+    getPerfumes(page: number = 1, limit: number = 12): Observable<PaginatedResponse<Perfume>> {
+        return this.http.get<PaginatedResponse<Perfume>>(this.apiUrl, {
+            params: { page: page.toString(), limit: limit.toString() }
+        });
     }
 
     getPerfume(id: string): Observable<Perfume> {

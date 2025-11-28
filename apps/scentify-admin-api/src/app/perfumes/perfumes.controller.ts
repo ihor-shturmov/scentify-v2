@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
 import { PerfumesService } from "./perfumes.service";
 import { CreatePerfumeDto } from "./dto/create-perfume.dto";
 import { UpdatePerfumeDto } from "./dto/update-perfume.dto";
@@ -8,8 +8,13 @@ export class PerfumesController {
     constructor(private readonly perfumesService: PerfumesService) { }
 
     @Get()
-    getPerfumes() {
-        return this.perfumesService.findAll();
+    getPerfumes(
+        @Query('page') page?: string,
+        @Query('limit') limit?: string
+    ) {
+        const pageNum = page ? parseInt(page, 10) : 1;
+        const limitNum = limit ? parseInt(limit, 10) : 10;
+        return this.perfumesService.findAll(pageNum, limitNum);
     }
 
     @Get(':id')
