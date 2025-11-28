@@ -11,6 +11,7 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { PerfumesService } from '../perfumes/perfumes.service';
+import { UploadPerfumeImageValidatePipe } from './upload-perfume-image-validate.pipe';
 
 @Controller('upload')
 export class UploadController {
@@ -23,24 +24,8 @@ export class UploadController {
     @UseInterceptors(FilesInterceptor('images', 10)) // Max 10 images
     async uploadPerfumeImages(
         @Param('id') perfumeId: string,
-        @UploadedFiles() files: Express.Multer.File[]
+        @UploadedFiles(new UploadPerfumeImageValidatePipe()) files: Express.Multer.File[]
     ) {
-        if (!files || files.length === 0) {
-            throw new BadRequestException('No files uploaded');
-        }
-
-        // Validate file types
-        const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-        const invalidFiles = files.filter(
-            (file) => !validTypes.includes(file.mimetype)
-        );
-
-        if (invalidFiles.length > 0) {
-            throw new BadRequestException(
-                'Invalid file type. Only JPEG, PNG, and WebP images are allowed'
-            );
-        }
-
         // Upload images to Cloudinary
         const imageUrls = await this.cloudinaryService.uploadMultipleImages(
             files,
