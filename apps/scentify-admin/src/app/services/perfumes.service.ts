@@ -9,7 +9,7 @@ export class PerfumesService {
     private apiUrl = `${environment.apiUrl}/perfumes`;
     private http: HttpClient = inject(HttpClient);
 
-    getPerfumes(page: number = 1, limit: number = 12): Observable<PaginatedResponse<Perfume>> {
+    getPerfumes(page = 1, limit = 12): Observable<PaginatedResponse<Perfume>> {
         return this.http.get<PaginatedResponse<Perfume>>(this.apiUrl, {
             params: { page: page.toString(), limit: limit.toString() }
         });

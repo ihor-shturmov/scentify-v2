@@ -1,13 +1,19 @@
-import { Component, OnInit, computed, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsersStore } from '../../store/users.store';
 import { AdminUser } from '@scentify/shared-types';
+import {
+    DataTableComponent,
+    TableFiltersComponent,
+    SortState,
+} from '../../components/ui/data-table';
+import { USER_FILTER_FIELDS, USER_TABLE_CONFIG } from './user-management.config';
 
 @Component({
     selector: 'app-user-management',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, DataTableComponent, TableFiltersComponent],
     templateUrl: './user-management.html',
 })
 export class UserManagementComponent implements OnInit {
@@ -23,24 +29,36 @@ export class UserManagementComponent implements OnInit {
     adminCount = this.usersStore.adminCount;
     regularUserCount = this.usersStore.regularUserCount;
 
-    // Local filter state
-    searchQuery = '';
-    selectedRole = '';
-    selectedStatus = '';
+    // Filter state
+    filterValues = signal<Record<string, string>>({
+        search: '',
+        role: '',
+        status: '',
+    });
+
+    // Imported configurations
+    readonly filterFields = USER_FILTER_FIELDS;
+    readonly tableConfig = USER_TABLE_CONFIG;
 
     // Computed filtered users
     filteredUsers = computed(() => {
         const users = this.users();
-        return users.filter(user => {
-            const matchesSearch =
-                user.firstName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                user.lastName.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                user.email.toLowerCase().includes(this.searchQuery.toLowerCase());
+        const filters = this.filterValues();
+        const searchTerm = filters['search'] ?? '';
+        const roleFilter = filters['role'] ?? '';
+        const statusFilter = filters['status'] ?? '';
 
-            const matchesRole = !this.selectedRole || user.role === this.selectedRole;
-            const matchesStatus = !this.selectedStatus ||
-                (this.selectedStatus === 'active' && user.isActive) ||
-                (this.selectedStatus === 'inactive' && !user.isActive);
+        return users.filter((user) => {
+            const matchesSearch =
+                user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+            const matchesRole = !roleFilter || user.role === roleFilter;
+            const matchesStatus =
+                !statusFilter ||
+                (statusFilter === 'active' && user.isActive) ||
+                (statusFilter === 'inactive' && !user.isActive);
 
             return matchesSearch && matchesRole && matchesStatus;
         });
@@ -50,8 +68,31 @@ export class UserManagementComponent implements OnInit {
         this.usersStore.loadUsers();
     }
 
-    applyFilters() {
-        // Filters are applied automatically via computed signal
+    onFilterChange(event: { key: string; value: string }): void {
+        this.filterValues.update((current) => ({
+            ...current,
+            [event.key]: event.value,
+        }));
+    }
+
+    onClearFilters(): void {
+        this.filterValues.set({ search: '', role: '', status: '' });
+    }
+
+    onSortChange(sort: SortState): void {
+        console.log('Sort changed:', sort);
+        // TODO: Implement sorting
+    }
+
+    onActionClick(event: { action: string; item: AdminUser }): void {
+        switch (event.action) {
+            case 'edit':
+                this.editUser(event.item);
+                break;
+            case 'delete':
+                this.deleteUser(event.item);
+                break;
+        }
     }
 
     editUser(user: AdminUser) {
