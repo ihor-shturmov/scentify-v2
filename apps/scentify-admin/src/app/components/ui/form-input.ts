@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, input, forwardRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 
@@ -15,67 +15,91 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@a
     ],
     template: `
     <div class="w-full">
-      <label *ngIf="label" [for]="inputId" class="block text-sm font-medium text-gray-700 mb-2">
-        {{ label }}
-        <span *ngIf="required" class="text-red-500">*</span>
-      </label>
+      @if (label()) {
+        <label [for]="inputId" class="block text-sm font-medium text-gray-700 mb-2">
+          {{ label() }}
+          @if (required()) {
+            <span class="text-red-500">*</span>
+          }
+        </label>
+      }
       <input
         [id]="inputId"
-        [type]="type"
-        [placeholder]="placeholder"
-        [value]="value"
-        [min]="min"
-        [max]="max"
+        [type]="type()"
+        [placeholder]="placeholder()"
+        [value]="value()"
+        [min]="min()"
+        [max]="max()"
         (input)="onInput($event)"
         (blur)="onTouched()"
-        [disabled]="disabled"
-        [class]="inputClasses"
+        [disabled]="disabled()"
+        [class]="inputClasses()"
       />
-      <p *ngIf="showError && errorMessage" class="mt-1 text-sm text-red-600">
-        {{ errorMessage }}
-      </p>
+      @if (showError()) {
+        <p class="mt-1 text-sm text-red-600">
+          {{ errorMessage() }}
+        </p>
+      }
     </div>
   `
 })
 export class FormInputComponent implements ControlValueAccessor {
-    @Input() label = '';
-    @Input() type: 'text' | 'email' | 'password' | 'number' | 'date' = 'text';
-    @Input() placeholder = '';
-    @Input() required = false;
-    @Input() errorMessage = 'This field is required';
-    @Input() min?: number;
-    @Input() max?: number;
+    label = input('');
+    type = input<'text' | 'email' | 'password' | 'number' | 'date'>('text');
+    placeholder = input('');
+    required = input(false);
+    errorMessage = input('This field is required');
+    min = input<number | undefined>(undefined);
+    max = input<number | undefined>(undefined);
 
     inputId = `input-${Math.random().toString(36).substring(2, 9)}`;
-    value = '';
-    disabled = false;
-    touched = false;
+    value = signal('');
+    disabled = signal(false);
+    touched = signal(false);
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     onChange: (value: string) => void = () => { };
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onTouched: () => void = () => { };
+    onTouchedFn: () => void = () => { };
 
-    get inputClasses(): string {
-        const baseClasses = 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors';
-        const errorClasses = this.showError ? 'border-red-500' : 'border-gray-300';
-        const disabledClasses = this.disabled ? 'bg-gray-100 cursor-not-allowed' : '';
+    inputClasses = signal('');
 
-        return `${baseClasses} ${errorClasses} ${disabledClasses}`;
+    constructor() {
+        // Compute input classes based on state
+        this.updateInputClasses();
     }
 
-    get showError(): boolean {
-        return this.touched && this.required && !this.value;
+    private updateInputClasses(): void {
+        const baseClasses = 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors';
+        const errorClasses = this.showError() ? 'border-red-500' : 'border-gray-300';
+        const disabledClasses = this.disabled() ? 'bg-gray-100 cursor-not-allowed' : '';
+
+        this.inputClasses.set(`${baseClasses} ${errorClasses} ${disabledClasses}`);
+    }
+
+    showError = signal(false);
+
+    private updateShowError(): void {
+        this.showError.set(this.touched() && this.required() && !this.value());
+        this.updateInputClasses();
     }
 
     onInput(event: Event): void {
         const input = event.target as HTMLInputElement;
-        this.value = input.value;
-        this.onChange(this.value);
+        this.value.set(input.value);
+        this.onChange(this.value());
+        this.updateShowError();
+    }
+
+    onTouched(): void {
+        this.touched.set(true);
+        this.onTouchedFn();
+        this.updateShowError();
     }
 
     writeValue(value: string): void {
-        this.value = value || '';
+        this.value.set(value || '');
+        this.updateShowError();
     }
 
     registerOnChange(fn: (value: string) => void): void {
@@ -83,13 +107,11 @@ export class FormInputComponent implements ControlValueAccessor {
     }
 
     registerOnTouched(fn: () => void): void {
-        this.onTouched = () => {
-            this.touched = true;
-            fn();
-        };
+        this.onTouchedFn = fn;
     }
 
     setDisabledState(isDisabled: boolean): void {
-        this.disabled = isDisabled;
+        this.disabled.set(isDisabled);
+        this.updateInputClasses();
     }
 }

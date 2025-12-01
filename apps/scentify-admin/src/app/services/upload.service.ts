@@ -2,12 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface UploadResponse {
-    message: string;
-    images: string[];
-    totalImages: number;
-}
+import { UploadResponse } from '../types/upload.types';
 
 @Injectable({
     providedIn: 'root'

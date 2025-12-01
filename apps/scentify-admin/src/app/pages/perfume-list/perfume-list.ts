@@ -1,7 +1,7 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { PerfumesStore } from '../../store/perfumes.store';
+import { PerfumesFacade } from '../../facades/perfumes.facade';
 import { FormatPerfumeTypePipe } from '../../pipes/format-perfume-type.pipe';
 import {
     DataTableComponent,
@@ -22,12 +22,12 @@ import { PERFUME_FILTER_FIELDS, PERFUME_TABLE_CONFIG } from './perfume-list.conf
     ],
     templateUrl: './perfume-list.html',
 })
-export class PerfumeListComponent implements OnInit {
-    private perfumeStore = inject(PerfumesStore);
+export class PerfumeListComponent {
+    private perfumeFacade = inject(PerfumesFacade);
 
-    perfumes = this.perfumeStore.perfumes;
-    pagination = this.perfumeStore.pagination;
-    isLoading = this.perfumeStore.isLoading;
+    perfumes = this.perfumeFacade.perfumes;
+    pagination = this.perfumeFacade.pagination;
+    isLoading = this.perfumeFacade.isLoading;
 
     // Filter state
     filterValues = signal<Record<string, string>>({});
@@ -36,9 +36,7 @@ export class PerfumeListComponent implements OnInit {
     readonly filterFields = PERFUME_FILTER_FIELDS;
     readonly tableConfig = PERFUME_TABLE_CONFIG;
 
-    ngOnInit(): void {
-        this.perfumeStore.loadPerfumes();
-    }
+
 
     onFilterChange(event: { key: string; value: string }): void {
         this.filterValues.update((current) => ({
@@ -53,7 +51,7 @@ export class PerfumeListComponent implements OnInit {
     }
 
     onPageChange(page: number): void {
-        this.perfumeStore.loadPerfumes(page);
+        this.perfumeFacade.loadPerfumes(page);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -70,7 +68,7 @@ export class PerfumeListComponent implements OnInit {
 
     deletePerfume(id: string): void {
         if (window.confirm('Are you sure you want to delete this perfume?')) {
-            this.perfumeStore.deletePerfume(id);
+            this.perfumeFacade.deletePerfume(id);
         }
     }
 }

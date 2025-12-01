@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { DashboardStore } from '../../store/dashboard.store';
+import { DashboardFacade } from '../../facades/dashboard.facade';
 
 @Component({
   selector: 'app-dashboard',
@@ -9,12 +9,12 @@ import { DashboardStore } from '../../store/dashboard.store';
   templateUrl: './dashboard.html',
 })
 export class DashboardComponent {
-  private readonly dashboardStore = inject(DashboardStore);
+  private readonly dashboardFacade = inject(DashboardFacade);
 
   // Expose store signals
-  stats = this.dashboardStore.stats;
-  recentOrders = this.dashboardStore.recentOrders;
-  isLoading = this.dashboardStore.isLoading;
+  stats = this.dashboardFacade.stats;
+  recentOrders = this.dashboardFacade.recentOrders;
+  isLoading = this.dashboardFacade.isLoading;
 
   getStatusClass(status: string): string {
     const classes: Record<string, string> = {

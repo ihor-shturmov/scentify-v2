@@ -1,6 +1,6 @@
 import { inject } from "@angular/core";
-import { UsersStore } from "../store/users.store";
+import { UsersFacade } from "../facades/users.facade";
 
 export const loadUsersResolver = () => {
-    return inject(UsersStore).loadUsers();
+    return inject(UsersFacade).loadUsers();
 };

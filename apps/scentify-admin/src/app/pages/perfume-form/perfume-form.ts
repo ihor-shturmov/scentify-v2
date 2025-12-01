@@ -1,9 +1,9 @@
-import { Component, effect } from '@angular/core';
+import { Component, effect, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { inject } from '@angular/core';
-import { PerfumesStore } from '../../store/perfumes.store';
+import { PerfumesFacade } from '../../facades/perfumes.facade';
 import { Perfume } from '@scentify/shared-types';
 import { FormInputComponent } from '../../components/ui/form-input';
 import { FormSelectComponent } from '../../components/ui/form-select';
@@ -33,13 +33,14 @@ import {
   templateUrl: './perfume-form.html',
 })
 export class PerfumeFormComponent {
-  private perfumesStore = inject(PerfumesStore);
+  // Route parameter as input
+  id = input<string>();
+
+  private perfumesFacade = inject(PerfumesFacade);
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
 
   perfumeForm!: FormGroup;
-  perfumeId: string | null = null;
 
   newTopNote = '';
   newMiddleNote = '';
@@ -55,13 +56,13 @@ export class PerfumeFormComponent {
 
     // Watch for route parameter changes
     effect(() => {
-      const id = this.activatedRoute.snapshot.params['id'];
-      if (id) {
-        this.perfumeId = id;
+      const perfumeId = this.id();
+      if (perfumeId) {
+        // Editing existing perfume - id is available
+        // Data will be loaded by resolver
       } else {
         // Creating new perfume - clear any existing data
-        this.perfumeId = null;
-        this.perfumesStore.clearSelectedPerfume();
+        this.perfumesFacade.clearSelectedPerfume();
         this.perfumeForm.reset({
           gender: 'unisex'
         });
@@ -70,8 +71,9 @@ export class PerfumeFormComponent {
 
     // Watch for selectedPerfume changes
     effect(() => {
-      const perfume = this.perfumesStore.selectedPerfume();
-      if (perfume && this.perfumeId) {
+      const perfume = this.perfumesFacade.selectedPerfume();
+      const perfumeId = this.id();
+      if (perfume && perfumeId) {
         this.patchFormWithPerfume(perfume);
       }
     });
@@ -188,9 +190,10 @@ export class PerfumeFormComponent {
   }
 
   onExistingImageRemoved(imageUrl: string): void {
-    if (!this.perfumeId) return;
+    const perfumeId = this.id();
+    if (!perfumeId) return;
 
-    this.perfumesStore.deleteImage({ perfumeId: this.perfumeId, imageUrl });
+    this.perfumesFacade.deleteImage(perfumeId, imageUrl);
   }
 
   onSubmit(): void {
@@ -202,9 +205,9 @@ export class PerfumeFormComponent {
     const formValue = this.perfumeForm.value;
     const images = formValue.images || [];
 
-    this.perfumesStore.savePerfumeWithImages({
+    this.perfumesFacade.savePerfumeWithImages({
       perfumeData: formValue,
-      perfumeId: this.perfumeId || undefined,
+      perfumeId: this.id(),
       images,
       onSuccess: () => {
         // Navigate to perfumes list after successful save

@@ -14,7 +14,7 @@ export class PerfumeRepository implements IPerfumeRepository {
         @InjectModel(Perfume.name) private readonly perfumeModel: Model<PerfumeDocument>
     ) { }
 
-    async findAll(skip: number = 0, limit: number = 10): Promise<Perfume[]> {
+    async findAll(skip = 0, limit = 10): Promise<Perfume[]> {
         return this.perfumeModel.find().skip(skip).limit(limit).exec();
     }
 

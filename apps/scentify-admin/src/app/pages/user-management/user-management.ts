@@ -1,7 +1,7 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UsersStore } from '../../store/users.store';
+import { UsersFacade } from '../../facades/users.facade';
 import { AdminUser } from '@scentify/shared-types';
 import {
     DataTableComponent,
@@ -16,18 +16,18 @@ import { USER_FILTER_FIELDS, USER_TABLE_CONFIG } from './user-management.config'
     imports: [CommonModule, FormsModule, DataTableComponent, TableFiltersComponent],
     templateUrl: './user-management.html',
 })
-export class UserManagementComponent implements OnInit {
-    private readonly usersStore = inject(UsersStore);
+export class UserManagementComponent {
+    private readonly usersFacade = inject(UsersFacade);
 
     // Store signals
-    users = this.usersStore.users;
-    isLoading = this.usersStore.isLoading;
-    error = this.usersStore.error;
-    userCount = this.usersStore.userCount;
-    activeUserCount = this.usersStore.activeUserCount;
-    inactiveUserCount = this.usersStore.inactiveUserCount;
-    adminCount = this.usersStore.adminCount;
-    regularUserCount = this.usersStore.regularUserCount;
+    users = this.usersFacade.users;
+    isLoading = this.usersFacade.isLoading;
+    error = this.usersFacade.error;
+    userCount = this.usersFacade.userCount;
+    activeUserCount = this.usersFacade.activeUserCount;
+    inactiveUserCount = this.usersFacade.inactiveUserCount;
+    adminCount = this.usersFacade.adminCount;
+    regularUserCount = this.usersFacade.regularUserCount;
 
     // Filter state
     filterValues = signal<Record<string, string>>({
@@ -64,10 +64,6 @@ export class UserManagementComponent implements OnInit {
         });
     });
 
-    ngOnInit() {
-        this.usersStore.loadUsers();
-    }
-
     onFilterChange(event: { key: string; value: string }): void {
         this.filterValues.update((current) => ({
             ...current,
@@ -102,19 +98,19 @@ export class UserManagementComponent implements OnInit {
 
     deleteUser(user: AdminUser) {
         if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}?`)) {
-            this.usersStore.deleteUser(user.id);
+            this.usersFacade.deleteUser(user.id);
         }
     }
 
     toggleStatus(user: AdminUser) {
-        this.usersStore.toggleUserStatus(user.id);
+        this.usersFacade.toggleUserStatus(user.id);
     }
 
     changeRole(user: AdminUser) {
-        this.usersStore.changeUserRole(user.id);
+        this.usersFacade.changeUserRole(user.id);
     }
 
     clearError() {
-        this.usersStore.clearError();
+        this.usersFacade.clearError();
     }
 }

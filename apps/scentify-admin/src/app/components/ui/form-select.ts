@@ -1,11 +1,7 @@
-import { Component, Input, forwardRef, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, inject } from '@angular/core';
+import { Component, input, forwardRef, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild, ElementRef, AfterViewInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-
-export interface SelectOption {
-    value: string;
-    label: string;
-}
+import { SelectOption } from '../../types/form.types';
 
 @Component({
     selector: 'app-form-select',
@@ -21,86 +17,112 @@ export interface SelectOption {
     ],
     template: `
     <div class="w-full">
-      <label *ngIf="label" [for]="selectId" class="block text-sm font-medium text-gray-700 mb-2">
-        {{ label }}
-        <span *ngIf="required" class="text-red-500">*</span>
-      </label>
+      @if (label()) {
+        <label [for]="selectId" class="block text-sm font-medium text-gray-700 mb-2">
+          {{ label() }}
+          @if (required()) {
+            <span class="text-red-500">*</span>
+          }
+        </label>
+      }
       <select
         #selectElement
         [id]="selectId"
-        [value]="value"
+        [value]="value()"
         (change)="onChange($event)"
         (blur)="onTouched()"
-        [disabled]="disabled"
-        [class]="selectClasses"
+        [disabled]="disabled()"
+        [class]="selectClasses()"
       >
-        <option value="" *ngIf="placeholder && placeholder.trim()">{{ placeholder }}</option>
-        <option *ngFor="let option of options" [value]="option.value">
-          {{ option.label }}
-        </option>
+        @if (placeholder() && placeholder().trim()) {
+          <option value="">{{ placeholder() }}</option>
+        }
+        @for (option of options(); track option.value) {
+          <option [value]="option.value">
+            {{ option.label }}
+          </option>
+        }
       </select>
-      <p *ngIf="showError && errorMessage" class="mt-1 text-sm text-red-600">
-        {{ errorMessage }}
-      </p>
+      @if (showError()) {
+        <p class="mt-1 text-sm text-red-600">
+          {{ errorMessage() }}
+        </p>
+      }
     </div>
   `
 })
 export class FormSelectComponent implements ControlValueAccessor, AfterViewInit {
-    @Input() label = '';
-    @Input() options: SelectOption[] = [];
-    @Input() placeholder = 'Select an option';
-    @Input() required = false;
-    @Input() errorMessage = 'This field is required';
+    label = input('');
+    options = input<SelectOption[]>([]);
+    placeholder = input('Select an option');
+    required = input(false);
+    errorMessage = input('This field is required');
     @ViewChild('selectElement') selectElement?: ElementRef<HTMLSelectElement>;
 
     selectId = `select-${Math.random().toString(36).substring(2, 9)}`;
-    value = '';
-    disabled = false;
-    touched = false;
+    value = signal('');
+    disabled = signal(false);
+    touched = signal(false);
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     private onChangeFn: (value: string) => void = () => { };
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onTouched: () => void = () => { };
+    onTouchedFn: () => void = () => { };
 
     private cdr = inject(ChangeDetectorRef);
 
+    selectClasses = signal('');
+    showError = signal(false);
+
+    constructor() {
+        this.updateSelectClasses();
+    }
+
     ngAfterViewInit(): void {
         // Ensure the select element has the correct value after rendering
-        if (this.selectElement && this.value) {
-            this.selectElement.nativeElement.value = this.value;
+        if (this.selectElement && this.value()) {
+            this.selectElement.nativeElement.value = this.value();
         }
     }
 
-    get selectClasses(): string {
+    private updateSelectClasses(): void {
         const baseClasses = 'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors';
-        const errorClasses = this.showError ? 'border-red-500' : 'border-gray-300';
-        const disabledClasses = this.disabled ? 'bg-gray-100 cursor-not-allowed' : '';
+        const errorClasses = this.showError() ? 'border-red-500' : 'border-gray-300';
+        const disabledClasses = this.disabled() ? 'bg-gray-100 cursor-not-allowed' : '';
 
-        return `${baseClasses} ${errorClasses} ${disabledClasses}`;
+        this.selectClasses.set(`${baseClasses} ${errorClasses} ${disabledClasses}`);
     }
 
-    get showError(): boolean {
-        return this.touched && this.required && !this.value;
+    private updateShowError(): void {
+        this.showError.set(this.touched() && this.required() && !this.value());
+        this.updateSelectClasses();
     }
 
     onChange(event: Event): void {
         const select = event.target as HTMLSelectElement;
-        this.value = select.value;
-        this.onChangeFn(this.value);
+        this.value.set(select.value);
+        this.onChangeFn(this.value());
+        this.updateShowError();
+    }
+
+    onTouched(): void {
+        this.touched.set(true);
+        this.onTouchedFn();
+        this.updateShowError();
     }
 
     writeValue(value: string | null | undefined): void {
         if (value !== null && value !== undefined && value !== '') {
-            this.value = String(value).trim();
+            this.value.set(String(value).trim());
         } else {
-            this.value = '';
+            this.value.set('');
         }
         // Sync the DOM element if it exists
         if (this.selectElement) {
-            this.selectElement.nativeElement.value = this.value;
+            this.selectElement.nativeElement.value = this.value();
         }
         this.cdr.markForCheck();
+        this.updateShowError();
     }
 
     registerOnChange(fn: (value: string) => void): void {
@@ -108,13 +130,11 @@ export class FormSelectComponent implements ControlValueAccessor, AfterViewInit 
     }
 
     registerOnTouched(fn: () => void): void {
-        this.onTouched = () => {
-            this.touched = true;
-            fn();
-        };
+        this.onTouchedFn = fn;
     }
 
     setDisabledState(isDisabled: boolean): void {
-        this.disabled = isDisabled;
+        this.disabled.set(isDisabled);
+        this.updateSelectClasses();
     }
 }

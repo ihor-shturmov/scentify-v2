@@ -1,7 +1,7 @@
 import { inject } from "@angular/core";
 import { ActivatedRouteSnapshot } from "@angular/router";
-import { PerfumesStore } from "../store/perfumes.store";
+import { PerfumesFacade } from "../facades/perfumes.facade";
 
 export const loadPerfumeByIdResolver = (route: ActivatedRouteSnapshot) => {
-    return inject(PerfumesStore).loadPerfume(route.params['id']);
+    return inject(PerfumesFacade).loadPerfume(route.params['id']);
 };

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
@@ -8,9 +8,9 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     templateUrl: './header.html',
 })
 export class HeaderComponent {
-    isMenuOpen = false;
+    isMenuOpen = signal(false);
 
     toggleMenu(): void {
-        this.isMenuOpen = !this.isMenuOpen;
+        this.isMenuOpen.update(value => !value);
     }
 }

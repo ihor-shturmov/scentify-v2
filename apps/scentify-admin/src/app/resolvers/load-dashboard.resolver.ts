@@ -1,12 +1,12 @@
 import { inject } from "@angular/core";
-import { PerfumesStore } from "../store/perfumes.store";
-import { UsersStore } from "../store/users.store";
+import { PerfumesFacade } from "../facades/perfumes.facade";
+import { UsersFacade } from "../facades/users.facade";
 
 export const loadDashboardResolver = () => {
-    const perfumesStore = inject(PerfumesStore);
-    const usersStore = inject(UsersStore);
+    const perfumesFacade = inject(PerfumesFacade);
+    const usersFacade = inject(UsersFacade);
 
-    // Load data from both stores
-    perfumesStore.loadPerfumes();
-    usersStore.loadUsers();
+    // Load data from both facades
+    perfumesFacade.loadPerfumes();
+    usersFacade.loadUsers();
 };

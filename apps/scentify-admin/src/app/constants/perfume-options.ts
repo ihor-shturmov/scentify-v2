@@ -1,5 +1,5 @@
 import { PerfumeType, ScentFamily } from '@scentify/shared-types';
-import { SelectOption } from '../components/ui/form-select';
+import { SelectOption } from '../types/form.types';
 
 /**
  * Perfume type options for the form select

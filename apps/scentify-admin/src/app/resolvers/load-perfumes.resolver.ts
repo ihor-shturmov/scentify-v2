@@ -1,6 +1,6 @@
 import { inject } from "@angular/core";
-import { PerfumesStore } from "../store/perfumes.store";
+import { PerfumesFacade } from "../facades/perfumes.facade";
 
 export const loadPerfumesResolver = () => {
-    return inject(PerfumesStore).loadPerfumes();
+    return inject(PerfumesFacade).loadPerfumes();
 };

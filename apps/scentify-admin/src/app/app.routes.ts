@@ -2,6 +2,7 @@ import { Route } from '@angular/router';
 import { loadPerfumesResolver } from './resolvers/load-perfumes.resolver';
 import { loadPerfumeByIdResolver } from './resolvers/load-perfume-by-id.resolver';
 import { loadDashboardResolver } from './resolvers/load-dashboard.resolver';
+import { loadUsersResolver } from './resolvers/load-users.resolver';
 
 export const appRoutes: Route[] = [
     {
@@ -36,6 +37,9 @@ export const appRoutes: Route[] = [
     },
     {
         path: 'users',
+        resolve: {
+            users: loadUsersResolver
+        },
         loadComponent: () => import('./pages/user-management/user-management').then(m => m.UserManagementComponent)
     }
 ];

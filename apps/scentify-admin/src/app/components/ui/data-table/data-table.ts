@@ -4,9 +4,8 @@ import {
     Component,
     computed,
     ContentChild,
-    EventEmitter,
     input,
-    Output,
+    output,
     signal,
     TemplateRef,
 } from '@angular/core';
@@ -45,13 +44,13 @@ export class DataTableComponent<T extends object> {
     @ContentChild('cellTemplate') cellTemplate?: TemplateRef<CellTemplateContext<T>>;
 
     /** Page change event */
-    @Output() pageChange = new EventEmitter<number>();
+    pageChange = output<number>();
 
     /** Sort change event */
-    @Output() sortChange = new EventEmitter<SortState>();
+    sortChange = output<SortState>();
 
     /** Action click event */
-    @Output() actionClick = new EventEmitter<{ action: string; item: T }>();
+    actionClick = output<{ action: string; item: T }>();
 
     /** Current sort state */
     sortState = signal<SortState>({ column: '', direction: null });

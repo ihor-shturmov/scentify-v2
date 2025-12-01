@@ -110,7 +110,7 @@
         </div>
 
         <!-- Mobile Navigation -->
-        @if (isMenuOpen) {
+        @if (isMenuOpen()) {
         <div class="md:hidden py-3 space-y-1">
             <a routerLink="/dashboard" routerLinkActive="bg-purple-50 text-purple-700" (click)="toggleMenu()"
                 class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">

@@ -8,24 +8,7 @@ import {
 } from '@ngrx/signals';
 import { PerfumesStore } from './perfumes.store';
 import { UsersStore } from './users.store';
-
-// Dashboard statistics interface
-export interface DashboardStats {
-    totalProducts: number;
-    totalOrders: number;
-    revenue: number;
-    activeUsers: number;
-}
-
-// Recent order interface
-export interface RecentOrder {
-    id: string;
-    customer: string;
-    product: string;
-    amount: number;
-    status: 'Delivered' | 'Shipped' | 'Processing' | 'Pending' | 'Cancelled';
-    date: string;
-}
+import { DashboardStats, RecentOrder } from '../types/dashboard.types';
 
 // State interface
 interface DashboardState {
