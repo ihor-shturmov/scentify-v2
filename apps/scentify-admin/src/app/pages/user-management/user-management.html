@@ -1,111 +1,120 @@
-<div class="p-6">
+<div class="min-h-screen bg-gray-50">
     <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">User Management</h1>
-        <p class="text-gray-600">Manage user accounts and permissions</p>
-    </div>
-
-    <!-- Error Message -->
-    @if (error()) {
+    <header class="bg-white shadow-sm">
         <div
-            class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6"
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center"
         >
-            {{ error() }}
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">User Management</h1>
+                <p class="text-sm text-gray-600 mt-1">Manage user accounts and permissions</p>
+            </div>
         </div>
-    }
+    </header>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <app-table-filters
-            [fields]="filterFields"
-            [values]="filterValues()"
-            (filterChange)="onFilterChange($event)"
-            (clearFilters)="onClearFilters()"
-        />
-    </div>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Error Message -->
+        @if (error()) {
+            <div
+                class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6"
+            >
+                {{ error() }}
+            </div>
+        }
 
-    <!-- Users Table -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <app-data-table
-            [data]="filteredUsers()"
-            [config]="tableConfig"
-            [loading]="isLoading()"
-            (sortChange)="onSortChange($event)"
-            (actionClick)="onActionClick($event)"
-        >
-            <!-- Custom cell template for user avatar and status -->
-            <ng-template #cellTemplate let-item let-column="column" let-value="value">
-                @switch (column.key) {
-                    @case ('user') {
-                        <div class="flex items-center">
-                            <div class="h-10 w-10 flex-shrink-0">
-                                <div
-                                    class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center"
-                                >
-                                    <span class="text-purple-600 font-medium">
-                                        {{ item.firstName.charAt(0)
-                                        }}{{ item.lastName.charAt(0) }}
-                                    </span>
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow p-4 mb-6">
+            <app-table-filters
+                [fields]="filterFields"
+                [values]="filterValues()"
+                (filterChange)="onFilterChange($event)"
+                (clearFilters)="onClearFilters()"
+            />
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <app-data-table
+                [data]="filteredUsers()"
+                [config]="tableConfig"
+                [loading]="isLoading()"
+                (sortChange)="onSortChange($event)"
+                (actionClick)="onActionClick($event)"
+            >
+                <!-- Custom cell template for user avatar and status -->
+                <ng-template #cellTemplate let-item let-column="column" let-value="value">
+                    @switch (column.key) {
+                        @case ('user') {
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 flex-shrink-0">
+                                    <div
+                                        class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center"
+                                    >
+                                        <span class="text-purple-600 font-medium">
+                                            {{ item.firstName.charAt(0)
+                                            }}{{ item.lastName.charAt(0) }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ item.firstName }} {{ item.lastName }}
+                                    </div>
                                 </div>
                             </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">
-                                    {{ item.firstName }} {{ item.lastName }}
-                                </div>
-                            </div>
-                        </div>
+                        }
+                        @case ('email') {
+                            <div class="text-sm text-gray-500">{{ item.email }}</div>
+                        }
+                        @case ('role') {
+                            <button
+                                (click)="changeRole(item)"
+                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                [ngClass]="{
+                                    'bg-purple-100 text-purple-800': item.role === 'admin',
+                                    'bg-gray-100 text-gray-800': item.role === 'user'
+                                }"
+                            >
+                                {{ item.role }}
+                            </button>
+                        }
+                        @case ('status') {
+                            <button
+                                (click)="toggleStatus(item)"
+                                class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                [ngClass]="{
+                                    'bg-green-100 text-green-800': item.isActive,
+                                    'bg-red-100 text-red-800': !item.isActive
+                                }"
+                            >
+                                {{ item.isActive ? 'active' : 'inactive' }}
+                            </button>
+                        }
+                        @case ('createdAt') {
+                            <span class="text-sm text-gray-500">
+                                {{ item.createdAt | date: 'MMM d, y' }}
+                            </span>
+                        }
+                        @case ('lastLogin') {
+                            <span class="text-sm text-gray-500">
+                                {{
+                                    item.lastLogin
+                                        ? (item.lastLogin | date: 'MMM d, y')
+                                        : 'Never'
+                                }}
+                            </span>
+                        }
+                        @default {
+                            <span class="text-sm text-gray-900">{{ value }}</span>
+                        }
                     }
-                    @case ('email') {
-                        <div class="text-sm text-gray-900">{{ item.email }}</div>
-                    }
-                    @case ('role') {
-                        <button
-                            (click)="changeRole(item)"
-                            class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                            [ngClass]="{
-                                'bg-purple-100 text-purple-800': item.role === 'admin',
-                                'bg-gray-100 text-gray-800': item.role === 'user'
-                            }"
-                        >
-                            {{ item.role }}
-                        </button>
-                    }
-                    @case ('status') {
-                        <button
-                            (click)="toggleStatus(item)"
-                            class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                            [ngClass]="{
-                                'bg-green-100 text-green-800': item.isActive,
-                                'bg-red-100 text-red-800': !item.isActive
-                            }"
-                        >
-                            {{ item.isActive ? 'active' : 'inactive' }}
-                        </button>
-                    }
-                    @case ('createdAt') {
-                        <span class="text-sm text-gray-500">
-                            {{ item.createdAt | date: 'MMM d, y' }}
-                        </span>
-                    }
-                    @case ('lastLogin') {
-                        <span class="text-sm text-gray-500">
-                            {{
-                                item.lastLogin
-                                    ? (item.lastLogin | date: 'MMM d, y')
-                                    : 'Never'
-                            }}
-                        </span>
-                    }
-                    @default {
-                        <span class="text-sm text-gray-900">{{ value }}</span>
-                    }
-                }
-            </ng-template>
-        </app-data-table>
-    </div>
+                </ng-template>
+            </app-data-table>
+        </div>
 
-    <!-- Summary -->
-    <div class="mt-6 flex items-center justify-between text-sm text-gray-500">
-        <div>Showing {{ filteredUsers().length }} of {{ users().length }} users</div>
-    </div>
+        <!-- Summary -->
+        <div class="mt-6 text-sm text-gray-500">
+            Showing {{ filteredUsers().length }} of {{ users().length }} users
+        </div>
+    </main>
 </div>
